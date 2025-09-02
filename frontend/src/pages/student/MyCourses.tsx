@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Search, Play, BookOpen, Clock, Star, Filter } from 'lucide-react';
+import { useCourses, useUserEnrollments } from '@/hooks/useCourses';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -87,18 +88,23 @@ export const MyCourses = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterLevel, setFilterLevel] = useState('all');
   const [activeTab, setActiveTab] = useState('enrolled');
-
-  const filteredEnrolledCourses = enrolledCourses.filter(course => {
-    const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesLevel = filterLevel === 'all' || course.level === filterLevel;
-    return matchesSearch && matchesLevel;
+  
+  const { data: enrollmentsData, isLoading: enrollmentsLoading } = useUserEnrollments();
+  const { data: coursesData, isLoading: coursesLoading } = useCourses({
+    search: searchTerm,
+    level: filterLevel !== 'all' ? filterLevel : undefined,
   });
 
-  const filteredAvailableCourses = availableCourses.filter(course => {
-    const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesLevel = filterLevel === 'all' || course.level === filterLevel;
-    return matchesSearch && matchesLevel;
-  });
+  const enrolledCourses = enrollmentsData?.enrollments || [];
+  const availableCourses = coursesData?.courses || [];
+
+  if (enrollmentsLoading || coursesLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600"></div>
+      </div>
+    );
+  }
 
   const getLevelBadge = (level: string) => {
     const colors = {
@@ -247,7 +253,7 @@ export const MyCourses = () => {
       {/* Available Courses */}
       {activeTab === 'available' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredAvailableCourses.map((course, index) => (
+          {availableCourses.map((course, index) => (
             <motion.div
               key={course.id}
               initial={{ opacity: 0, y: 20 }}
@@ -257,32 +263,31 @@ export const MyCourses = () => {
               <Card className="overflow-hidden">
                 <div className="aspect-video bg-gray-200 relative">
                   <img
-                    src={course.image}
+                    src={course.thumbnail || 'https://images.pexels.com/photos/256455/pexels-photo-256455.jpeg'}
                     alt={course.title}
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute top-4 right-4">
                     <Badge className={getLevelBadge(course.level)}>
-                      {course.level === 'beginner' ? 'Débutant' :
-                       course.level === 'intermediate' ? 'Intermédiaire' : 'Avancé'}
+                      {course.level}
                     </Badge>
                   </div>
                 </div>
                 
                 <CardContent className="p-6">
                   <h3 className="font-semibold text-lg mb-2">{course.title}</h3>
-                  <p className="text-gray-600 text-sm mb-3">Par {course.instructor}</p>
+                  <p className="text-gray-600 text-sm mb-3">Par {course.teacher?.firstName} {course.teacher?.lastName}</p>
                   
                   <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
                     <div className="flex items-center">
                       <Clock className="w-4 h-4 mr-1" />
-                      {course.duration}
+                      {Math.floor(course.duration / 60)}h {course.duration % 60}min
                     </div>
                     <div className="flex items-center">
                       <Star className="w-4 h-4 mr-1 text-yellow-400" />
-                      {course.rating}
+                      4.8
                     </div>
-                    <span>{course.students} étudiants</span>
+                    <span>{course._count?.enrollments || 0} étudiants</span>
                   </div>
 
                   <div className="flex items-center justify-between">

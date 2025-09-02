@@ -1,5 +1,22 @@
 const Joi = require('joi');
 
+// Validation middleware
+const validate = (schema) => {
+  return (req, res, next) => {
+    const { error } = schema.validate(req.body);
+    if (error) {
+      return res.status(400).json({
+        message: 'Validation error',
+        errors: error.details.map(detail => ({
+          field: detail.path.join('.'),
+          message: detail.message
+        }))
+      });
+    }
+    next();
+  };
+};
+
 // Common validation patterns
 const patterns = {
   email: Joi.string().email().required(),
@@ -147,6 +164,7 @@ const announcementSchemas = {
 };
 
 module.exports = {
+  validate,
   patterns,
   authSchemas: extendedAuthSchemas,
   courseSchemas: extendedCourseSchemas,

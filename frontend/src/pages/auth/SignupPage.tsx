@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { useAuthStore } from '@/store/authStore';
+import { useAuth } from '@/hooks/useAuth';
 import { Eye, EyeOff, User, GraduationCap } from 'lucide-react';
 import type { UserRole } from '@/store/authStore';
 
@@ -20,8 +20,7 @@ export const SignupPage = () => {
     role: 'student' as UserRole,
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuthStore();
+  const { register, isLoading } = useAuth();
   const navigate = useNavigate();
 
   const handleInputChange = (field: string, value: string) => {
@@ -30,36 +29,32 @@ export const SignupPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
 
     if (formData.password !== formData.confirmPassword) {
-      alert('Les mots de passe ne correspondent pas');
-      setIsLoading(false);
+      toast.error('Les mots de passe ne correspondent pas');
       return;
     }
 
-    // Simulation d'inscription - à remplacer par vraie API
-    setTimeout(() => {
-      const newUser = {
-        id: Date.now().toString(),
-        name: `${formData.firstName} ${formData.lastName}`,
+    try {
+      await register({
         email: formData.email,
-        role: formData.role,
-      };
-
-      login(newUser);
+        password: formData.password,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        role: formData.role.toUpperCase(),
+      });
       
       // Redirection basée sur le rôle
-      switch (newUser.role) {
+      switch (formData.role) {
         case 'professor':
           navigate('/professor');
           break;
         default:
           navigate('/student');
       }
-      
-      setIsLoading(false);
-    }, 1000);
+    } catch (error) {
+      // L'erreur est déjà gérée par le hook
+    }
   };
 
   return (

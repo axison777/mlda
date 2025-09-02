@@ -4,53 +4,40 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useAuthStore } from '@/store/authStore';
+import { useAuth } from '@/hooks/useAuth';
 import { Eye, EyeOff } from 'lucide-react';
 
 export const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuthStore();
+  const { login, isLoading } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
 
-    // Simulation de connexion - à remplacer par vraie API
-    setTimeout(() => {
-      const mockUser = {
-        id: '1',
-        name: 'John Doe',
-        email,
-        role: 'student' as const, // Par défaut étudiant
-      };
-
-      // Logique simple pour déterminer le rôle basé sur l'email
-      if (email.includes('admin')) {
-        mockUser.role = 'admin';
-      } else if (email.includes('prof') || email.includes('teacher')) {
-        mockUser.role = 'professor';
-      }
-
-      login(mockUser);
+    
+    try {
+      await login({ email, password });
       
-      // Redirection basée sur le rôle
-      switch (mockUser.role) {
-        case 'admin':
-          navigate('/admin');
-          break;
-        case 'professor':
-          navigate('/professor');
-          break;
-        default:
-          navigate('/student');
+      // La redirection sera gérée par le hook useAuth
+      const user = JSON.parse(localStorage.getItem('mlda-auth') || '{}').state?.user;
+      if (user) {
+        switch (user.role) {
+          case 'admin':
+            navigate('/admin');
+            break;
+          case 'professor':
+            navigate('/professor');
+            break;
+          default:
+            navigate('/student');
+        }
       }
-      
-      setIsLoading(false);
-    }, 1000);
+    } catch (error) {
+      // L'erreur est déjà gérée par le hook
+    }
   };
 
   return (

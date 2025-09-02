@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { useAuthStore } from '@/store/authStore';
+import { useAuth } from '@/hooks/useAuth';
 import {
   Home,
   Users,
@@ -43,7 +43,7 @@ const studentMenuItems = [
 
 export const Sidebar = () => {
   const location = useLocation();
-  const { user } = useAuthStore();
+  const { user } = useAuth();
 
   const getMenuItems = () => {
     switch (user?.role) {

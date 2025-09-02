@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from 'react-query';
 import { Toaster } from '@/components/ui/sonner';
+import { useEffect } from 'react';
+import { useAuthStore } from '@/store/authStore';
 
 // Layouts
 import { AppLayout } from '@/components/layout/AppLayout';
@@ -31,11 +32,14 @@ import { ContinueCourse } from '@/pages/student/ContinueCourse';
 import { Subscriptions } from '@/pages/student/Subscriptions';
 import { StudentProfile } from '@/pages/student/StudentProfile';
 
-const queryClient = new QueryClient();
-
 function App() {
+  const { initializeAuth } = useAuthStore();
+
+  useEffect(() => {
+    initializeAuth();
+  }, [initializeAuth]);
+
   return (
-    <QueryClientProvider client={queryClient}>
       <Router>
         <Routes>
           {/* Public Routes */}
@@ -94,7 +98,6 @@ function App() {
         </Routes>
         <Toaster />
       </Router>
-    </QueryClientProvider>
   );
 }
 
