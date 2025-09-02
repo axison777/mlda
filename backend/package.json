@@ -25,6 +25,7 @@
     "joi": "^17.11.0",
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",
+    "mysql2": "^3.14.4",
     "nodemailer": "^6.9.7",
     "stripe": "^14.9.0"
   },
@@ -34,7 +35,12 @@
     "prisma": "^5.7.1",
     "supertest": "^6.3.3"
   },
-  "keywords": ["e-learning", "german", "education", "api"],
+  "keywords": [
+    "e-learning",
+    "german",
+    "education",
+    "api"
+  ],
   "author": "MLDA Team",
   "license": "MIT"
 }
