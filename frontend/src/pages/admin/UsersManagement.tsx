@@ -20,71 +20,42 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Search, MoreHorizontal, UserPlus, Filter } from 'lucide-react';
 
-const mockUsers = [
-  {
-    id: '1',
-    name: 'Marie Dubois',
-    email: 'marie.dubois@email.com',
-    role: 'student',
-    status: 'active',
-    joinDate: '2024-01-15',
-    lastActive: '2024-01-20',
-  },
-  {
-    id: '2',
-    name: 'Dr. Hans Mueller',
-    email: 'h.mueller@mlda.de',
-    role: 'professor',
-    status: 'active',
-    joinDate: '2023-09-10',
-    lastActive: '2024-01-20',
-  },
-  {
-    id: '3',
-    name: 'Pierre Martin',
-    email: 'pierre.martin@email.com',
-    role: 'student',
-    status: 'inactive',
-    joinDate: '2023-12-05',
-    lastActive: '2024-01-10',
-  },
-  {
-    id: '4',
-    name: 'Prof. Anna Schmidt',
-    email: 'a.schmidt@mlda.de',
-    role: 'professor',
-    status: 'active',
-    joinDate: '2023-08-20',
-    lastActive: '2024-01-19',
-  },
-];
+import { useUsers, useUpdateUser, useDeleteUser } from '@/hooks/useUsers';
 
 export const UsersManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRole, setFilterRole] = useState('all');
 
-  const filteredUsers = mockUsers.filter(user => {
-    const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesRole = filterRole === 'all' || user.role === filterRole;
-    return matchesSearch && matchesRole;
+  const { data: usersData, isLoading } = useUsers({
+    search: searchTerm,
+    role: filterRole !== 'all' ? filterRole : undefined,
   });
+  
+  const updateUserMutation = useUpdateUser();
+  const deleteUserMutation = useDeleteUser();
+
+  const users = usersData?.users || [];
 
   const getRoleBadge = (role: string) => {
     const colors = {
       admin: 'bg-red-100 text-red-800',
-      professor: 'bg-blue-100 text-blue-800',
+      teacher: 'bg-blue-100 text-blue-800',
       student: 'bg-green-100 text-green-800',
     };
     return colors[role as keyof typeof colors] || 'bg-gray-100 text-gray-800';
   };
 
   const getStatusBadge = (status: string) => {
-    return status === 'active' 
+    return status 
       ? 'bg-green-100 text-green-800' 
       : 'bg-gray-100 text-gray-800';
   };
 
+  const handleDeleteUser = async (id: string) => {
+    if (confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) {
+      await deleteUserMutation.mutateAsync(id);
+    }
+  };
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -107,7 +78,7 @@ export const UsersManagement = () => {
         <Card>
           <CardContent className="p-6">
             <div className="text-center">
-              <p className="text-3xl font-bold text-gray-900">2,847</p>
+              <p className="text-3xl font-bold text-gray-900">{users.length}</p>
               <p className="text-sm text-gray-600">Total Utilisateurs</p>
             </div>
           </CardContent>
@@ -115,7 +86,9 @@ export const UsersManagement = () => {
         <Card>
           <CardContent className="p-6">
             <div className="text-center">
-              <p className="text-3xl font-bold text-green-600">2,691</p>
+              <p className="text-3xl font-bold text-green-600">
+                {users.filter((u: any) => u.role === 'STUDENT').length}
+              </p>
               <p className="text-sm text-gray-600">Étudiants</p>
             </div>
           </CardContent>
@@ -123,7 +96,9 @@ export const UsersManagement = () => {
         <Card>
           <CardContent className="p-6">
             <div className="text-center">
-              <p className="text-3xl font-bold text-blue-600">156</p>
+              <p className="text-3xl font-bold text-blue-600">
+                {users.filter((u: any) => u.role === 'TEACHER').length}
+              </p>
               <p className="text-sm text-gray-600">Professeurs</p>
             </div>
           </CardContent>
@@ -131,7 +106,9 @@ export const UsersManagement = () => {
         <Card>
           <CardContent className="p-6">
             <div className="text-center">
-              <p className="text-3xl font-bold text-yellow-600">2,456</p>
+              <p className="text-3xl font-bold text-yellow-600">
+                {users.filter((u: any) => u.isActive).length}
+              </p>
               <p className="text-sm text-gray-600">Actifs ce mois</p>
             </div>
           </CardContent>
@@ -168,67 +145,88 @@ export const UsersManagement = () => {
                 <DropdownMenuItem onClick={() => setFilterRole('student')}>
                   Étudiants
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setFilterRole('professor')}>
+                <DropdownMenuItem onClick={() => setFilterRole('teacher')}>
                   Professeurs
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
 
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Utilisateur</TableHead>
-                <TableHead>Rôle</TableHead>
-                <TableHead>Statut</TableHead>
-                <TableHead>Date d'inscription</TableHead>
-                <TableHead>Dernière activité</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredUsers.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell>
-                    <div>
-                      <p className="font-medium">{user.name}</p>
-                      <p className="text-sm text-gray-600">{user.email}</p>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={getRoleBadge(user.role)}>
-                      {user.role === 'student' ? 'Étudiant' : 
-                       user.role === 'professor' ? 'Professeur' : 'Admin'}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={getStatusBadge(user.status)}>
-                      {user.status === 'active' ? 'Actif' : 'Inactif'}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>{new Date(user.joinDate).toLocaleDateString('fr-FR')}</TableCell>
-                  <TableCell>{new Date(user.lastActive).toLocaleDateString('fr-FR')}</TableCell>
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm">
-                          <MoreHorizontal className="w-4 h-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>Voir le profil</DropdownMenuItem>
-                        <DropdownMenuItem>Modifier</DropdownMenuItem>
-                        <DropdownMenuItem>Suspendre</DropdownMenuItem>
-                        <DropdownMenuItem className="text-red-600">
-                          Supprimer
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
+          {isLoading ? (
+            <div className="flex items-center justify-center h-32">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600"></div>
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Utilisateur</TableHead>
+                  <TableHead>Rôle</TableHead>
+                  <TableHead>Statut</TableHead>
+                  <TableHead>Date d'inscription</TableHead>
+                  <TableHead>Cours/Inscriptions</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {users.map((user: any) => (
+                  <TableRow key={user.id}>
+                    <TableCell>
+                      <div>
+                        <p className="font-medium">{user.firstName} {user.lastName}</p>
+                        <p className="text-sm text-gray-600">{user.email}</p>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge className={getRoleBadge(user.role.toLowerCase())}>
+                        {user.role === 'STUDENT' ? 'Étudiant' : 
+                         user.role === 'TEACHER' ? 'Professeur' : 'Admin'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge className={getStatusBadge(user.isActive)}>
+                        {user.isActive ? 'Actif' : 'Inactif'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>{new Date(user.createdAt).toLocaleDateString('fr-FR')}</TableCell>
+                    <TableCell>
+                      {user.role === 'TEACHER' ? (
+                        <span className="text-sm text-gray-600">
+                          {user._count?.courses || 0} cours
+                        </span>
+                      ) : (
+                        <span className="text-sm text-gray-600">
+                          {user._count?.enrollments || 0} inscriptions
+                        </span>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm">
+                            <MoreHorizontal className="w-4 h-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem>Voir le profil</DropdownMenuItem>
+                          <DropdownMenuItem>Modifier</DropdownMenuItem>
+                          <DropdownMenuItem>
+                            {user.isActive ? 'Suspendre' : 'Activer'}
+                          </DropdownMenuItem>
+                          <DropdownMenuItem 
+                            className="text-red-600"
+                            onClick={() => handleDeleteUser(user.id)}
+                          >
+                            Supprimer
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
     </motion.div>

@@ -2,10 +2,12 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@/store/authStore';
 import { apiClient } from '@/lib/api';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 export const useAuth = () => {
   const { user, login, logout } = useAuthStore();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const loginMutation = useMutation({
     mutationFn: ({ email, password }: { email: string; password: string }) =>
@@ -15,17 +17,28 @@ export const useAuth = () => {
         id: data.user.id,
         name: `${data.user.firstName} ${data.user.lastName}`,
         email: data.user.email,
-        role: data.user.role.toLowerCase() as any,
+        role: data.user.role.toLowerCase() === 'teacher' ? 'professor' : data.user.role.toLowerCase() as any,
         avatar: data.user.avatar,
       };
       
       apiClient.setToken(data.token);
-      login(userData);
-      
-      // Store token separately for API client
-      localStorage.setItem('mlda-token', data.token);
+      login(userData, data.token);
       
       toast.success('Connexion réussie !');
+      
+      // Redirect based on role
+      setTimeout(() => {
+        switch (userData.role) {
+          case 'admin':
+            navigate('/admin');
+            break;
+          case 'professor':
+            navigate('/professor');
+            break;
+          default:
+            navigate('/student');
+        }
+      }, 100);
     },
     onError: (error: any) => {
       toast.error(error.message || 'Erreur de connexion');
@@ -45,16 +58,28 @@ export const useAuth = () => {
         id: data.user.id,
         name: `${data.user.firstName} ${data.user.lastName}`,
         email: data.user.email,
-        role: data.user.role.toLowerCase() as any,
+        role: data.user.role.toLowerCase() === 'teacher' ? 'professor' : data.user.role.toLowerCase() as any,
         avatar: data.user.avatar,
       };
       
       apiClient.setToken(data.token);
-      login(userData);
-      
-      localStorage.setItem('mlda-token', data.token);
+      login(userData, data.token);
       
       toast.success('Inscription réussie !');
+      
+      // Redirect based on role
+      setTimeout(() => {
+        switch (userData.role) {
+          case 'admin':
+            navigate('/admin');
+            break;
+          case 'professor':
+            navigate('/professor');
+            break;
+          default:
+            navigate('/student');
+        }
+      }, 100);
     },
     onError: (error: any) => {
       toast.error(error.message || 'Erreur d\'inscription');
@@ -65,10 +90,11 @@ export const useAuth = () => {
     queryKey: ['profile'],
     queryFn: () => apiClient.getProfile(),
     enabled: !!user,
+    retry: false,
     onError: (error: any) => {
       if (error.message.includes('token') || error.message.includes('401')) {
         logout();
-        localStorage.removeItem('mlda-token');
+        navigate('/login');
       }
     },
   });
@@ -86,8 +112,8 @@ export const useAuth = () => {
 
   const handleLogout = () => {
     logout();
-    localStorage.removeItem('mlda-token');
     queryClient.clear();
+    navigate('/login');
     toast.success('Déconnexion réussie');
   };
 
@@ -98,7 +124,7 @@ export const useAuth = () => {
     register: registerMutation.mutate,
     logout: handleLogout,
     updateProfile: updateProfileMutation.mutate,
-    isLoading: loginMutation.isLoading || registerMutation.isLoading,
+    isLoading: loginMutation.isPending || registerMutation.isPending,
     profile: profileQuery.data?.user,
   };
 };

@@ -15,7 +15,7 @@ import {
 
 const currentSubscription = {
   plan: 'Professionnel',
-  price: 59,
+  price: 30000,
   period: 'mois',
   status: 'active',
   nextBilling: '2024-02-20',
@@ -31,7 +31,7 @@ const currentSubscription = {
 const availablePlans = [
   {
     name: 'Étudiant',
-    price: 29,
+    price: 15000,
     period: 'mois',
     description: 'Parfait pour commencer',
     features: [
@@ -45,7 +45,7 @@ const availablePlans = [
   },
   {
     name: 'Professionnel',
-    price: 59,
+    price: 30000,
     period: 'mois',
     description: 'Le plus populaire',
     features: [
@@ -60,7 +60,7 @@ const availablePlans = [
   },
   {
     name: 'Entreprise',
-    price: 199,
+    price: 100000,
     period: 'mois',
     description: 'Pour les équipes',
     features: [
@@ -79,7 +79,7 @@ const billingHistory = [
   {
     id: 'INV-001',
     date: '2024-01-20',
-    amount: 59,
+    amount: 30000,
     plan: 'Professionnel',
     status: 'paid',
     method: 'Carte **** 4242',
@@ -87,7 +87,7 @@ const billingHistory = [
   {
     id: 'INV-002',
     date: '2023-12-20',
-    amount: 59,
+    amount: 30000,
     plan: 'Professionnel',
     status: 'paid',
     method: 'Carte **** 4242',
@@ -95,7 +95,7 @@ const billingHistory = [
   {
     id: 'INV-003',
     date: '2023-11-20',
-    amount: 29,
+    amount: 15000,
     plan: 'Étudiant',
     status: 'paid',
     method: 'PayPal',
@@ -134,7 +134,7 @@ export const Subscriptions = () => {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-2xl font-bold text-gray-900">{currentSubscription.plan}</h3>
-              <p className="text-gray-600">€{currentSubscription.price}/{currentSubscription.period}</p>
+              <p className="text-gray-600">{currentSubscription.price.toLocaleString()} FCFA/{currentSubscription.period}</p>
               <p className="text-sm text-gray-600 mt-2">
                 Prochaine facturation: {new Date(currentSubscription.nextBilling).toLocaleDateString('fr-FR')}
               </p>
@@ -201,7 +201,7 @@ export const Subscriptions = () => {
                     <h3 className="text-xl font-semibold mb-2">{plan.name}</h3>
                     <p className="text-gray-600 text-sm mb-4">{plan.description}</p>
                     <div className="mb-6">
-                      <span className="text-4xl font-bold">€{plan.price}</span>
+                      <span className="text-4xl font-bold">{plan.price.toLocaleString()} FCFA</span>
                       <span className="text-gray-600">/{plan.period}</span>
                     </div>
                     
@@ -261,7 +261,7 @@ export const Subscriptions = () => {
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="font-medium">€{invoice.amount}</p>
+                  <p className="font-medium">{invoice.amount.toLocaleString()} FCFA</p>
                   <Badge className={getStatusBadge(invoice.status)}>
                     {invoice.status === 'paid' ? 'Payé' : 'Échoué'}
                   </Badge>

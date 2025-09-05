@@ -238,7 +238,7 @@ export const ProductsManagement = () => {
                     step="0.01"
                     value={productForm.price}
                     onChange={(e) => handleFormChange('price', e.target.value)}
-                    placeholder="29.99"
+                    placeholder="15000"
                     required
                   />
                 </div>
@@ -274,14 +274,14 @@ export const ProductsManagement = () => {
                   <div className="flex items-center gap-3">
                     {hasDiscount ? (
                       <>
-                        <span className="text-2xl font-bold text-red-600">€{finalPrice.toFixed(2)}</span>
-                        <span className="text-lg text-gray-500 line-through">€{parseFloat(productForm.price).toFixed(2)}</span>
+                        <span className="text-2xl font-bold text-red-600">{finalPrice.toLocaleString()} FCFA</span>
+                        <span className="text-lg text-gray-500 line-through">{parseFloat(productForm.price).toLocaleString()} FCFA</span>
                         <Badge className="bg-green-100 text-green-800">
-                          Économie: €{(parseFloat(productForm.price) - finalPrice).toFixed(2)}
+                          Économie: {(parseFloat(productForm.price) - finalPrice).toLocaleString()} FCFA
                         </Badge>
                       </>
                     ) : (
-                      <span className="text-2xl font-bold text-gray-900">€{parseFloat(productForm.price).toFixed(2)}</span>
+                      <span className="text-2xl font-bold text-gray-900">{parseFloat(productForm.price).toLocaleString()} FCFA</span>
                     )}
                   </div>
                 </div>
@@ -468,11 +468,11 @@ export const ProductsManagement = () => {
                         <div className="flex items-center gap-2">
                           {hasDiscount ? (
                             <>
-                              <span className="font-bold text-red-600">€{finalPrice.toFixed(2)}</span>
-                              <span className="text-sm text-gray-500 line-through">€{product.price.toFixed(2)}</span>
+                              <span className="font-bold text-red-600">{finalPrice.toLocaleString()} FCFA</span>
+                              <span className="text-sm text-gray-500 line-through">{product.price.toLocaleString()} FCFA</span>
                             </>
                           ) : (
-                            <span className="font-medium">€{product.price.toFixed(2)}</span>
+                            <span className="font-medium">{product.price.toLocaleString()} FCFA</span>
                           )}
                         </div>
                       </TableCell>

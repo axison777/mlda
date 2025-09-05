@@ -14,44 +14,14 @@ import {
   Bar,
 } from 'recharts';
 
-const stats = [
-  {
-    title: 'Total Apprenants',
-    value: '2,847',
-    change: '+12%',
-    icon: Users,
-    color: 'text-blue-600',
-  },
-  {
-    title: 'Professeurs Actifs',
-    value: '156',
-    change: '+5%',
-    icon: BookOpen,
-    color: 'text-green-600',
-  },
-  {
-    title: 'Cours Publiés',
-    value: '342',
-    change: '+8%',
-    icon: BookOpen,
-    color: 'text-red-600',
-  },
-  {
-    title: 'Revenus Mensuels',
-    value: '€45,230',
-    change: '+15%',
-    icon: TrendingUp,
-    color: 'text-yellow-600',
-  },
-];
 
 const revenueData = [
-  { month: 'Jan', revenue: 32000 },
-  { month: 'Fév', revenue: 38000 },
-  { month: 'Mar', revenue: 42000 },
-  { month: 'Avr', revenue: 45230 },
-  { month: 'Mai', revenue: 41000 },
-  { month: 'Juin', revenue: 48000 },
+  { month: 'Jan', revenue: 3200000 },
+  { month: 'Fév', revenue: 3800000 },
+  { month: 'Mar', revenue: 4200000 },
+  { month: 'Avr', revenue: 4523000 },
+  { month: 'Mai', revenue: 4100000 },
+  { month: 'Juin', revenue: 4800000 },
 ];
 
 const coursesData = [
@@ -71,6 +41,36 @@ export const AdminDashboard = () => {
     );
   }
 
+  const stats = [
+    {
+      title: 'Total Apprenants',
+      value: statsData?.stats?.users?.total?.toString() || '0',
+      change: '+12%',
+      icon: Users,
+      color: 'text-blue-600',
+    },
+    {
+      title: 'Professeurs Actifs',
+      value: statsData?.stats?.users?.byRole?.teacher?.toString() || '0',
+      change: '+5%',
+      icon: BookOpen,
+      color: 'text-green-600',
+    },
+    {
+      title: 'Cours Publiés',
+      value: statsData?.stats?.courses?.byStatus?.published?.toString() || '0',
+      change: '+8%',
+      icon: BookOpen,
+      color: 'text-red-600',
+    },
+    {
+      title: 'Revenus Mensuels',
+      value: `${(statsData?.stats?.revenue?.total || 0).toLocaleString()} FCFA`,
+      change: '+15%',
+      icon: TrendingUp,
+      color: 'text-yellow-600',
+    },
+  ];
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -119,7 +119,7 @@ export const AdminDashboard = () => {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="month" />
                 <YAxis />
-                <Tooltip formatter={(value) => [`€${value}`, 'Revenus']} />
+                <Tooltip formatter={(value) => [`${value.toLocaleString()} FCFA`, 'Revenus']} />
                 <Line
                   type="monotone"
                   dataKey="revenue"

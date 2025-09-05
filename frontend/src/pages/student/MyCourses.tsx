@@ -14,75 +14,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-const enrolledCourses = [
-  {
-    id: '1',
-    title: 'Allemand pour débutants',
-    instructor: 'Dr. Hans Mueller',
-    level: 'beginner',
-    progress: 75,
-    totalLessons: 24,
-    completedLessons: 18,
-    nextLesson: 'Leçon 19: Les verbes de modalité',
-    rating: 4.8,
-    duration: '8 semaines',
-    image: 'https://images.pexels.com/photos/256455/pexels-photo-256455.jpeg',
-    lastAccessed: '2024-01-20',
-  },
-  {
-    id: '2',
-    title: 'Grammaire allemande avancée',
-    instructor: 'Prof. Anna Schmidt',
-    level: 'advanced',
-    progress: 45,
-    totalLessons: 18,
-    completedLessons: 8,
-    nextLesson: 'Leçon 9: Le subjonctif II',
-    rating: 4.9,
-    duration: '6 semaines',
-    image: 'https://images.pexels.com/photos/416405/pexels-photo-416405.jpeg',
-    lastAccessed: '2024-01-18',
-  },
-  {
-    id: '3',
-    title: 'Conversation allemande pratique',
-    instructor: 'Mme Weber',
-    level: 'intermediate',
-    progress: 90,
-    totalLessons: 12,
-    completedLessons: 11,
-    nextLesson: 'Leçon 12: Débats et opinions',
-    rating: 4.7,
-    duration: '4 semaines',
-    image: 'https://images.pexels.com/photos/5212345/pexels-photo-5212345.jpeg',
-    lastAccessed: '2024-01-19',
-  },
-];
-
-const availableCourses = [
-  {
-    id: '4',
-    title: 'Allemand des affaires',
-    instructor: 'Dr. Klaus Weber',
-    level: 'advanced',
-    price: 89,
-    rating: 4.9,
-    students: 156,
-    duration: '10 semaines',
-    image: 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg',
-  },
-  {
-    id: '5',
-    title: 'Préparation TestDaF',
-    instructor: 'Prof. Lisa Hoffman',
-    level: 'advanced',
-    price: 129,
-    rating: 4.8,
-    students: 89,
-    duration: '12 semaines',
-    image: 'https://images.pexels.com/photos/159711/books-bookstore-book-reading-159711.jpeg',
-  },
-];
 
 export const MyCourses = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -106,13 +37,28 @@ export const MyCourses = () => {
     );
   }
 
+  const filteredEnrolledCourses = enrolledCourses.filter((enrollment: any) => {
+    const course = enrollment.course;
+    const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesLevel = filterLevel === 'all' || course.level.toLowerCase() === filterLevel;
+    return matchesSearch && matchesLevel;
+  });
+
+  const filteredAvailableCourses = availableCourses.filter((course: any) => {
+    const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesLevel = filterLevel === 'all' || course.level.toLowerCase() === filterLevel;
+    return matchesSearch && matchesLevel;
+  });
   const getLevelBadge = (level: string) => {
     const colors = {
-      beginner: 'bg-green-100 text-green-800',
-      intermediate: 'bg-yellow-100 text-yellow-800',
-      advanced: 'bg-red-100 text-red-800',
+      a1: 'bg-green-100 text-green-800',
+      a2: 'bg-green-100 text-green-800',
+      b1: 'bg-yellow-100 text-yellow-800',
+      b2: 'bg-yellow-100 text-yellow-800',
+      c1: 'bg-red-100 text-red-800',
+      c2: 'bg-red-100 text-red-800',
     };
-    return colors[level as keyof typeof colors] || 'bg-gray-100 text-gray-800';
+    return colors[level.toLowerCase() as keyof typeof colors] || 'bg-gray-100 text-gray-800';
   };
 
   const getProgressColor = (progress: number) => {
@@ -156,14 +102,23 @@ export const MyCourses = () => {
                 <DropdownMenuItem onClick={() => setFilterLevel('all')}>
                   Tous les niveaux
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setFilterLevel('beginner')}>
-                  Débutant
+                <DropdownMenuItem onClick={() => setFilterLevel('a1')}>
+                  A1 - Débutant
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setFilterLevel('intermediate')}>
-                  Intermédiaire
+                <DropdownMenuItem onClick={() => setFilterLevel('a2')}>
+                  A2 - Élémentaire
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setFilterLevel('advanced')}>
-                  Avancé
+                <DropdownMenuItem onClick={() => setFilterLevel('b1')}>
+                  B1 - Intermédiaire
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setFilterLevel('b2')}>
+                  B2 - Intermédiaire supérieur
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setFilterLevel('c1')}>
+                  C1 - Avancé
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setFilterLevel('c2')}>
+                  C2 - Maîtrise
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -192,7 +147,9 @@ export const MyCourses = () => {
       {/* Enrolled Courses */}
       {activeTab === 'enrolled' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredEnrolledCourses.map((course, index) => (
+          {filteredEnrolledCourses.map((enrollment: any, index: number) => {
+            const course = enrollment.course;
+            return (
             <motion.div
               key={course.id}
               initial={{ opacity: 0, y: 20 }}
@@ -202,40 +159,41 @@ export const MyCourses = () => {
               <Card className="overflow-hidden">
                 <div className="aspect-video bg-gray-200 relative">
                   <img
-                    src={course.image}
+                    src={course.thumbnail || 'https://images.pexels.com/photos/256455/pexels-photo-256455.jpeg'}
                     alt={course.title}
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute top-4 right-4">
                     <Badge className={getLevelBadge(course.level)}>
-                      {course.level === 'beginner' ? 'Débutant' :
-                       course.level === 'intermediate' ? 'Intermédiaire' : 'Avancé'}
+                      {course.level}
                     </Badge>
                   </div>
                 </div>
                 
                 <CardContent className="p-6">
                   <h3 className="font-semibold text-lg mb-2">{course.title}</h3>
-                  <p className="text-gray-600 text-sm mb-3">Par {course.instructor}</p>
+                  <p className="text-gray-600 text-sm mb-3">
+                    Par {course.teacher?.firstName} {course.teacher?.lastName}
+                  </p>
                   
                   <div className="space-y-3">
                     <div className="flex justify-between items-center text-sm">
                       <span className="text-gray-600">Progression</span>
-                      <span className="font-medium">{course.progress}%</span>
+                      <span className="font-medium">0%</span>
                     </div>
-                    <Progress value={course.progress} className="h-2" />
+                    <Progress value={0} className="h-2" />
                     
                     <div className="flex items-center justify-between text-sm text-gray-600">
-                      <span>{course.completedLessons}/{course.totalLessons} leçons</span>
+                      <span>0/{course._count?.lessons || 0} leçons</span>
                       <div className="flex items-center">
                         <Star className="w-4 h-4 mr-1 text-yellow-400" />
-                        {course.rating}
+                        4.8
                       </div>
                     </div>
 
                     <div className="pt-2 border-t">
                       <p className="text-sm text-gray-600 mb-3">
-                        Prochaine leçon: {course.nextLesson}
+                        Commencer le cours
                       </p>
                       <Button className="w-full bg-red-600 hover:bg-red-700">
                         <Play className="w-4 h-4 mr-2" />
@@ -246,14 +204,14 @@ export const MyCourses = () => {
                 </CardContent>
               </Card>
             </motion.div>
-          ))}
+          )})}
         </div>
       )}
 
       {/* Available Courses */}
       {activeTab === 'available' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {availableCourses.map((course, index) => (
+          {filteredAvailableCourses.map((course: any, index: number) => (
             <motion.div
               key={course.id}
               initial={{ opacity: 0, y: 20 }}
@@ -281,7 +239,7 @@ export const MyCourses = () => {
                   <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
                     <div className="flex items-center">
                       <Clock className="w-4 h-4 mr-1" />
-                      {Math.floor(course.duration / 60)}h {course.duration % 60}min
+                      {Math.floor(course.duration / 60)}h
                     </div>
                     <div className="flex items-center">
                       <Star className="w-4 h-4 mr-1 text-yellow-400" />
@@ -291,7 +249,7 @@ export const MyCourses = () => {
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <span className="text-2xl font-bold text-red-600">€{course.price}</span>
+                    <span className="text-2xl font-bold text-red-600">{course.price} FCFA</span>
                     <Button className="bg-red-600 hover:bg-red-700">
                       S'inscrire
                     </Button>

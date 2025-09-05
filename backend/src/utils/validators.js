@@ -73,7 +73,7 @@ const extendedCourseSchemas = {
   create: Joi.object({
     title: Joi.string().min(3).max(200).required(),
     description: Joi.string().min(10).max(2000).required(),
-    price: patterns.price.default(0),
+    price: Joi.number().min(0).max(999999).default(0), // Updated for FCFA
     level: patterns.level.required(),
     duration: patterns.duration.required(),
     thumbnail: patterns.url.optional()
@@ -82,7 +82,7 @@ const extendedCourseSchemas = {
   update: Joi.object({
     title: Joi.string().min(3).max(200),
     description: Joi.string().min(10).max(2000),
-    price: patterns.price,
+    price: Joi.number().min(0).max(999999), // Updated for FCFA
     level: patterns.level,
     duration: patterns.duration,
     status: patterns.status,
@@ -143,7 +143,7 @@ const extendedQuizSchemas = {
 const paymentSchemas = {
   createIntent: Joi.object({
     courseId: patterns.id.required(),
-    amount: patterns.price.required()
+    amount: Joi.number().min(0).max(999999).required() // Updated for FCFA
   })
 };
 
@@ -172,7 +172,7 @@ const productSchemas = {
   create: Joi.object({
     name: Joi.string().min(3).max(200).required(),
     description: Joi.string().max(2000),
-    price: patterns.price.required(),
+    price: Joi.number().min(0).max(999999).required(), // Updated for FCFA
     discount: Joi.number().min(0),
     discountType: Joi.string().valid('percentage', 'fixed'),
     images: Joi.array().items(patterns.url).min(1).required(),
@@ -183,7 +183,7 @@ const productSchemas = {
   update: Joi.object({
     name: Joi.string().min(3).max(200),
     description: Joi.string().max(2000),
-    price: patterns.price,
+    price: Joi.number().min(0).max(999999), // Updated for FCFA
     discount: Joi.number().min(0),
     discountType: Joi.string().valid('percentage', 'fixed'),
     images: Joi.array().items(patterns.url).min(1),

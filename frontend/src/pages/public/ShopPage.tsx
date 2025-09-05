@@ -179,11 +179,11 @@ export const ShopPage = () => {
                       <div className="flex items-center gap-2">
                         {hasDiscount ? (
                           <>
-                            <span className="text-2xl font-bold text-red-600">€{finalPrice.toFixed(2)}</span>
-                            <span className="text-lg text-gray-500 line-through">€{product.price.toFixed(2)}</span>
+                            <span className="text-2xl font-bold text-red-600">{(finalPrice * 655).toLocaleString()} FCFA</span>
+                            <span className="text-lg text-gray-500 line-through">{(product.price * 655).toLocaleString()} FCFA</span>
                           </>
                         ) : (
-                          <span className="text-2xl font-bold text-gray-900">€{product.price.toFixed(2)}</span>
+                          <span className="text-2xl font-bold text-gray-900">{(product.price * 655).toLocaleString()} FCFA</span>
                         )}
                       </div>
                       <Button 

@@ -6,8 +6,21 @@ class ApiClient {
 
   constructor(baseURL: string) {
     this.baseURL = baseURL;
-    this.token = localStorage.getItem('mlda-auth') ? 
-      JSON.parse(localStorage.getItem('mlda-auth')!).state.token : null;
+    // Initialize token from localStorage
+    this.initializeToken();
+  }
+
+  private initializeToken() {
+    try {
+      const authData = localStorage.getItem('mlda-auth');
+      if (authData) {
+        const parsed = JSON.parse(authData);
+        this.token = parsed.state?.token || null;
+      }
+    } catch (error) {
+      console.error('Error parsing auth data:', error);
+      this.token = null;
+    }
   }
 
   setToken(token: string) {
@@ -46,7 +59,7 @@ class ApiClient {
 
   // Auth endpoints
   async login(email: string, password: string) {
-    return this.request<{ user: any; token: string }>('/auth/login', {
+    return this.request<{ user: any; token: string; message: string }>('/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     });
@@ -59,7 +72,7 @@ class ApiClient {
     lastName: string;
     role?: string;
   }) {
-    return this.request<{ user: any; token: string }>('/auth/register', {
+    return this.request<{ user: any; token: string; message: string }>('/auth/register', {
       method: 'POST',
       body: JSON.stringify(userData),
     });
@@ -70,7 +83,7 @@ class ApiClient {
   }
 
   async updateProfile(updates: any) {
-    return this.request<{ user: any }>('/auth/profile', {
+    return this.request<{ user: any; message: string }>('/auth/profile', {
       method: 'PUT',
       body: JSON.stringify(updates),
     });
@@ -103,21 +116,21 @@ class ApiClient {
   }
 
   async createCourse(courseData: any) {
-    return this.request<{ course: any }>('/courses', {
+    return this.request<{ course: any; message: string }>('/courses', {
       method: 'POST',
       body: JSON.stringify(courseData),
     });
   }
 
   async updateCourse(id: string, updates: any) {
-    return this.request<{ course: any }>(`/courses/${id}`, {
+    return this.request<{ course: any; message: string }>(`/courses/${id}`, {
       method: 'PUT',
       body: JSON.stringify(updates),
     });
   }
 
   async deleteCourse(id: string) {
-    return this.request(`/courses/${id}`, {
+    return this.request<{ message: string }>(`/courses/${id}`, {
       method: 'DELETE',
     });
   }
@@ -132,15 +145,28 @@ class ApiClient {
   }
 
   async createLesson(lessonData: any) {
-    return this.request<{ lesson: any }>('/lessons', {
+    return this.request<{ lesson: any; message: string }>('/lessons', {
       method: 'POST',
       body: JSON.stringify(lessonData),
     });
   }
 
+  async updateLesson(id: string, updates: any) {
+    return this.request<{ lesson: any; message: string }>(`/lessons/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(updates),
+    });
+  }
+
+  async deleteLesson(id: string) {
+    return this.request<{ message: string }>(`/lessons/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
   // Enrollment endpoints
   async enrollInCourse(courseId: string) {
-    return this.request<{ enrollment: any }>('/enrollments', {
+    return this.request<{ enrollment: any; message: string }>('/enrollments', {
       method: 'POST',
       body: JSON.stringify({ courseId }),
     });
@@ -152,7 +178,7 @@ class ApiClient {
 
   // Progress endpoints
   async updateLessonProgress(lessonId: string, data: { completed: boolean; timeSpent?: number }) {
-    return this.request(`/progress/lesson/${lessonId}`, {
+    return this.request<{ progress: any; message: string }>(`/progress/lesson/${lessonId}`, {
       method: 'POST',
       body: JSON.stringify(data),
     });
@@ -168,7 +194,7 @@ class ApiClient {
   }
 
   async submitQuizAttempt(quizId: string, data: { answers: string[]; timeSpent: number }) {
-    return this.request(`/quiz/${quizId}/attempt`, {
+    return this.request<{ result: any; message: string }>(`/quiz/${quizId}/attempt`, {
       method: 'POST',
       body: JSON.stringify(data),
     });
@@ -208,15 +234,19 @@ class ApiClient {
     return this.request<{ users: any[]; pagination: any }>(`/users${query ? `?${query}` : ''}`);
   }
 
+  async getUserById(id: string) {
+    return this.request<{ user: any }>(`/users/${id}`);
+  }
+
   async updateUser(id: string, updates: any) {
-    return this.request(`/users/${id}`, {
+    return this.request<{ user: any; message: string }>(`/users/${id}`, {
       method: 'PUT',
       body: JSON.stringify(updates),
     });
   }
 
   async deleteUser(id: string) {
-    return this.request(`/users/${id}`, {
+    return this.request<{ message: string }>(`/users/${id}`, {
       method: 'DELETE',
     });
   }
@@ -247,21 +277,46 @@ class ApiClient {
   }
 
   async createProduct(productData: any) {
-    return this.request<{ product: any }>('/products', {
+    return this.request<{ product: any; message: string }>('/products', {
       method: 'POST',
       body: JSON.stringify(productData),
     });
   }
 
   async updateProduct(id: string, updates: any) {
-    return this.request<{ product: any }>(`/products/${id}`, {
+    return this.request<{ product: any; message: string }>(`/products/${id}`, {
       method: 'PUT',
       body: JSON.stringify(updates),
     });
   }
 
   async deleteProduct(id: string) {
-    return this.request(`/products/${id}`, {
+    return this.request<{ message: string }>(`/products/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // Announcements endpoints
+  async getAnnouncements() {
+    return this.request<{ announcements: any[] }>('/announcements');
+  }
+
+  async createAnnouncement(data: any) {
+    return this.request<{ announcement: any; message: string }>('/announcements', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateAnnouncement(id: string, updates: any) {
+    return this.request<{ announcement: any; message: string }>(`/announcements/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(updates),
+    });
+  }
+
+  async deleteAnnouncement(id: string) {
+    return this.request<{ message: string }>(`/announcements/${id}`, {
       method: 'DELETE',
     });
   }

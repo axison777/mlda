@@ -20,57 +20,29 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Search, MoreHorizontal, Plus, BookOpen, Users, Star } from 'lucide-react';
 
-const mockCourses = [
-  {
-    id: '1',
-    title: 'Allemand pour débutants',
-    instructor: 'Dr. Hans Mueller',
-    level: 'beginner',
-    students: 245,
-    rating: 4.8,
-    price: 49,
-    status: 'published',
-    createdAt: '2023-09-15',
-  },
-  {
-    id: '2',
-    title: 'Allemand des affaires',
-    instructor: 'Prof. Anna Schmidt',
-    level: 'advanced',
-    students: 156,
-    rating: 4.9,
-    price: 89,
-    status: 'published',
-    createdAt: '2023-10-20',
-  },
-  {
-    id: '3',
-    title: 'Grammaire allemande avancée',
-    instructor: 'Dr. Klaus Weber',
-    level: 'intermediate',
-    students: 89,
-    rating: 4.7,
-    price: 69,
-    status: 'draft',
-    createdAt: '2024-01-10',
-  },
-];
+import { useCourses, useDeleteCourse } from '@/hooks/useCourses';
 
 export const CoursesManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
-  const filteredCourses = mockCourses.filter(course =>
-    course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    course.instructor.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const { data: coursesData, isLoading } = useCourses({
+    search: searchTerm,
+  });
+  
+  const deleteCourseMutation = useDeleteCourse();
+
+  const courses = coursesData?.courses || [];
 
   const getLevelBadge = (level: string) => {
     const colors = {
-      beginner: 'bg-green-100 text-green-800',
-      intermediate: 'bg-yellow-100 text-yellow-800',
-      advanced: 'bg-red-100 text-red-800',
+      a1: 'bg-green-100 text-green-800',
+      a2: 'bg-green-100 text-green-800',
+      b1: 'bg-yellow-100 text-yellow-800',
+      b2: 'bg-yellow-100 text-yellow-800',
+      c1: 'bg-red-100 text-red-800',
+      c2: 'bg-red-100 text-red-800',
     };
-    return colors[level as keyof typeof colors] || 'bg-gray-100 text-gray-800';
+    return colors[level.toLowerCase() as keyof typeof colors] || 'bg-gray-100 text-gray-800';
   };
 
   const getStatusBadge = (status: string) => {
@@ -79,12 +51,17 @@ export const CoursesManagement = () => {
       draft: 'bg-gray-100 text-gray-800',
       pending: 'bg-yellow-100 text-yellow-800',
     };
-    return colors[status as keyof typeof colors] || 'bg-gray-100 text-gray-800';
+    return colors[status.toLowerCase() as keyof typeof colors] || 'bg-gray-100 text-gray-800';
   };
 
-  const totalStudents = mockCourses.reduce((sum, course) => sum + course.students, 0);
-  const averageRating = mockCourses.reduce((sum, course) => sum + course.rating, 0) / mockCourses.length;
-  const publishedCourses = mockCourses.filter(course => course.status === 'published').length;
+  const totalStudents = courses.reduce((sum: number, course: any) => sum + (course._count?.enrollments || 0), 0);
+  const publishedCourses = courses.filter((course: any) => course.status === 'PUBLISHED').length;
+
+  const handleDeleteCourse = async (id: string) => {
+    if (confirm('Êtes-vous sûr de vouloir supprimer ce cours ?')) {
+      await deleteCourseMutation.mutateAsync(id);
+    }
+  };
 
   return (
     <motion.div
@@ -110,7 +87,7 @@ export const CoursesManagement = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Total Cours</p>
-                <p className="text-3xl font-bold text-gray-900">{mockCourses.length}</p>
+                <p className="text-3xl font-bold text-gray-900">{courses.length}</p>
               </div>
               <BookOpen className="w-12 h-12 text-blue-600" />
             </div>
@@ -143,7 +120,7 @@ export const CoursesManagement = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Note Moyenne</p>
-                <p className="text-3xl font-bold text-red-600">{averageRating.toFixed(1)}</p>
+                <p className="text-3xl font-bold text-red-600">4.8</p>
               </div>
               <Star className="w-12 h-12 text-red-600" />
             </div>
@@ -169,72 +146,75 @@ export const CoursesManagement = () => {
             </div>
           </div>
 
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Cours</TableHead>
-                <TableHead>Instructeur</TableHead>
-                <TableHead>Niveau</TableHead>
-                <TableHead>Étudiants</TableHead>
-                <TableHead>Note</TableHead>
-                <TableHead>Prix</TableHead>
-                <TableHead>Statut</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredCourses.map((course) => (
-                <TableRow key={course.id}>
-                  <TableCell>
-                    <div>
-                      <p className="font-medium">{course.title}</p>
-                      <p className="text-sm text-gray-600">
-                        Créé le {new Date(course.createdAt).toLocaleDateString('fr-FR')}
-                      </p>
-                    </div>
-                  </TableCell>
-                  <TableCell>{course.instructor}</TableCell>
-                  <TableCell>
-                    <Badge className={getLevelBadge(course.level)}>
-                      {course.level === 'beginner' ? 'Débutant' :
-                       course.level === 'intermediate' ? 'Intermédiaire' : 'Avancé'}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>{course.students}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center">
-                      <Star className="w-4 h-4 text-yellow-400 mr-1" />
-                      {course.rating}
-                    </div>
-                  </TableCell>
-                  <TableCell>€{course.price}</TableCell>
-                  <TableCell>
-                    <Badge className={getStatusBadge(course.status)}>
-                      {course.status === 'published' ? 'Publié' :
-                       course.status === 'draft' ? 'Brouillon' : 'En attente'}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm">
-                          <MoreHorizontal className="w-4 h-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>Voir détails</DropdownMenuItem>
-                        <DropdownMenuItem>Modifier</DropdownMenuItem>
-                        <DropdownMenuItem>Dupliquer</DropdownMenuItem>
-                        <DropdownMenuItem className="text-red-600">
-                          Supprimer
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
+          {isLoading ? (
+            <div className="flex items-center justify-center h-32">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600"></div>
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Cours</TableHead>
+                  <TableHead>Instructeur</TableHead>
+                  <TableHead>Niveau</TableHead>
+                  <TableHead>Étudiants</TableHead>
+                  <TableHead>Prix</TableHead>
+                  <TableHead>Statut</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {courses.map((course: any) => (
+                  <TableRow key={course.id}>
+                    <TableCell>
+                      <div>
+                        <p className="font-medium">{course.title}</p>
+                        <p className="text-sm text-gray-600">
+                          Créé le {new Date(course.createdAt).toLocaleDateString('fr-FR')}
+                        </p>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      {course.teacher?.firstName} {course.teacher?.lastName}
+                    </TableCell>
+                    <TableCell>
+                      <Badge className={getLevelBadge(course.level)}>
+                        {course.level}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>{course._count?.enrollments || 0}</TableCell>
+                    <TableCell>{course.price.toLocaleString()} FCFA</TableCell>
+                    <TableCell>
+                      <Badge className={getStatusBadge(course.status)}>
+                        {course.status === 'PUBLISHED' ? 'Publié' :
+                         course.status === 'DRAFT' ? 'Brouillon' : 'En attente'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm">
+                            <MoreHorizontal className="w-4 h-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem>Voir détails</DropdownMenuItem>
+                          <DropdownMenuItem>Modifier</DropdownMenuItem>
+                          <DropdownMenuItem>Dupliquer</DropdownMenuItem>
+                          <DropdownMenuItem 
+                            className="text-red-600"
+                            onClick={() => handleDeleteCourse(course.id)}
+                          >
+                            Supprimer
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
     </motion.div>

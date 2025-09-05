@@ -63,21 +63,21 @@ const testimonials = [
 const pricingPlans = [
   {
     name: 'Étudiant',
-    price: '29',
+    price: '15,000',
     period: '/mois',
     features: ['Accès à tous les cours', 'Support par email', 'Certificat de fin'],
     popular: false,
   },
   {
     name: 'Professionnel',
-    price: '59',
+    price: '30,000',
     period: '/mois',
     features: ['Tout du plan Étudiant', 'Cours business', 'Sessions 1-on-1', 'Support prioritaire'],
     popular: true,
   },
   {
     name: 'Entreprise',
-    price: '199',
+    price: '100,000',
     period: '/mois',
     features: ['Tout du plan Pro', 'Comptes illimités', 'Rapports détaillés', 'Manager dédié'],
     popular: false,
@@ -272,7 +272,7 @@ export const LandingPage = () => {
                   <CardContent className="p-8">
                     <h3 className="text-2xl font-semibold mb-4">{plan.name}</h3>
                     <div className="mb-6">
-                      <span className="text-5xl font-bold">€{plan.price}</span>
+                      <span className="text-5xl font-bold">{plan.price} FCFA</span>
                       <span className="text-gray-600">{plan.period}</span>
                     </div>
                     <ul className="space-y-4 mb-8">

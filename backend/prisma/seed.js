@@ -80,7 +80,7 @@ async function main() {
       id: 'course-1',
       title: 'Allemand pour débutants',
       description: 'Apprenez les bases de la langue allemande avec des méthodes modernes et interactives.',
-      price: 49.99,
+      price: 25000,
       level: 'A1',
       duration: 480, // 8 hours
       status: 'PUBLISHED',
@@ -96,7 +96,7 @@ async function main() {
       id: 'course-2',
       title: 'Grammaire allemande avancée',
       description: 'Perfectionnez votre maîtrise de la grammaire allemande.',
-      price: 79.99,
+      price: 40000,
       level: 'B2',
       duration: 360, // 6 hours
       status: 'PUBLISHED',
@@ -171,7 +171,7 @@ async function main() {
     data: {
       name: 'Manuel d\'allemand A1 - Débutant',
       description: 'Manuel complet pour apprendre les bases de l\'allemand avec exercices et audio.',
-      price: 29.99,
+      price: 15000,
       discount: 20,
       discountType: 'percentage',
       images: [
@@ -187,7 +187,7 @@ async function main() {
     data: {
       name: 'Dictionnaire Allemand-Français',
       description: 'Dictionnaire complet avec plus de 50,000 mots et expressions.',
-      price: 45.00,
+      price: 22000,
       images: [
         'https://images.pexels.com/photos/416405/pexels-photo-416405.jpeg'
       ],
@@ -200,8 +200,8 @@ async function main() {
     data: {
       name: 'Cartes de vocabulaire allemand',
       description: 'Set de 500 cartes pour mémoriser le vocabulaire essentiel.',
-      price: 19.99,
-      discount: 5,
+      price: 10000,
+      discount: 2000,
       discountType: 'fixed',
       images: [
         'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg'

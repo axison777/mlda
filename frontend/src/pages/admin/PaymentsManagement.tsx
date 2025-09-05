@@ -34,7 +34,7 @@ const mockPayments = [
     id: 'PAY-001',
     user: 'Marie Dubois',
     course: 'Allemand pour débutants',
-    amount: 49,
+    amount: 25000,
     status: 'completed',
     method: 'card',
     date: '2024-01-20',
@@ -43,7 +43,7 @@ const mockPayments = [
     id: 'PAY-002',
     user: 'Pierre Martin',
     course: 'Allemand des affaires',
-    amount: 89,
+    amount: 45000,
     status: 'completed',
     method: 'paypal',
     date: '2024-01-19',
@@ -52,7 +52,7 @@ const mockPayments = [
     id: 'PAY-003',
     user: 'Sophie Laurent',
     course: 'Grammaire allemande',
-    amount: 69,
+    amount: 35000,
     status: 'pending',
     method: 'card',
     date: '2024-01-18',
@@ -61,7 +61,7 @@ const mockPayments = [
     id: 'PAY-004',
     user: 'Thomas Durand',
     course: 'Conversation allemande',
-    amount: 59,
+    amount: 30000,
     status: 'failed',
     method: 'card',
     date: '2024-01-17',
@@ -69,12 +69,12 @@ const mockPayments = [
 ];
 
 const revenueData = [
-  { month: 'Jan', revenue: 32000 },
-  { month: 'Fév', revenue: 38000 },
-  { month: 'Mar', revenue: 42000 },
-  { month: 'Avr', revenue: 45230 },
-  { month: 'Mai', revenue: 41000 },
-  { month: 'Juin', revenue: 48000 },
+  { month: 'Jan', revenue: 20000000 },
+  { month: 'Fév', revenue: 25000000 },
+  { month: 'Mar', revenue: 28000000 },
+  { month: 'Avr', revenue: 30000000 },
+  { month: 'Mai', revenue: 27000000 },
+  { month: 'Juin', revenue: 32000000 },
 ];
 
 export const PaymentsManagement = () => {
@@ -130,7 +130,7 @@ export const PaymentsManagement = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Revenus Totaux</p>
-                <p className="text-3xl font-bold text-gray-900">€{totalRevenue}</p>
+                <p className="text-3xl font-bold text-gray-900">{totalRevenue.toLocaleString()} FCFA</p>
                 <p className="text-sm text-green-600">+15% ce mois</p>
               </div>
               <DollarSign className="w-12 h-12 text-green-600" />
@@ -186,7 +186,7 @@ export const PaymentsManagement = () => {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" />
               <YAxis />
-              <Tooltip formatter={(value) => [`€${value}`, 'Revenus']} />
+              <Tooltip formatter={(value) => [`${value.toLocaleString()} FCFA`, 'Revenus']} />
               <Line
                 type="monotone"
                 dataKey="revenue"
@@ -235,7 +235,7 @@ export const PaymentsManagement = () => {
                   <TableCell className="font-mono text-sm">{payment.id}</TableCell>
                   <TableCell>{payment.user}</TableCell>
                   <TableCell>{payment.course}</TableCell>
-                  <TableCell className="font-medium">€{payment.amount}</TableCell>
+                  <TableCell className="font-medium">{payment.amount.toLocaleString()} FCFA</TableCell>
                   <TableCell>
                     <Badge className={getMethodBadge(payment.method)}>
                       {payment.method === 'card' ? 'Carte' :
