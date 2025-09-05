@@ -8,8 +8,8 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
+  id        String   @id @default(cuid()) @db.VarChar(64)
+  email     String   @unique @db.VarChar(191)
   password  String
   firstName String
   lastName  String
@@ -20,28 +20,28 @@ model User {
   updatedAt DateTime @updatedAt
 
   // Relations
-  courses     Course[]
-  enrollments Enrollment[]
-  progress    Progress[]
+  courses      Course[]
+  enrollments  Enrollment[]
+  progress     Progress[]
   quizAttempts QuizAttempt[]
-  payments    Payment[]
+  payments     Payment[]
 
   @@map("users")
 }
 
 model Course {
-  id          String      @id @default(cuid())
+  id          String       @id @default(cuid()) @db.VarChar(64)
   title       String
-  description String      @db.Text
-  price       Float       @default(0)
+  description String       @db.Text
+  price       Float        @default(0)
   level       Level
-  duration    Int         // in minutes
+  duration    Int
   thumbnail   String?
   status      CourseStatus @default(DRAFT)
-  featured    Boolean     @default(false)
-  teacherId   String
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  featured    Boolean      @default(false)
+  teacherId   String       @db.VarChar(64)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 
   // Relations
   teacher     User         @relation(fields: [teacherId], references: [id], onDelete: Cascade)
@@ -53,15 +53,15 @@ model Course {
 }
 
 model Lesson {
-  id          String   @id @default(cuid())
+  id          String   @id @default(cuid()) @db.VarChar(64)
   title       String
   description String?
   content     String   @db.Text
   videoUrl    String?
-  duration    Int      // in minutes
+  duration    Int
   order       Int
   isPublished Boolean  @default(false)
-  courseId    String
+  courseId    String   @db.VarChar(64)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -74,12 +74,12 @@ model Lesson {
 }
 
 model Quiz {
-  id           String   @id @default(cuid())
+  id           String   @id @default(cuid()) @db.VarChar(64)
   title        String
   description  String?
-  timeLimit    Int?     // in minutes
+  timeLimit    Int?
   passingScore Int      @default(70)
-  lessonId     String
+  lessonId     String   @db.VarChar(64)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -92,13 +92,13 @@ model Quiz {
 }
 
 model QuizQuestion {
-  id            String   @id @default(cuid())
+  id            String   @id @default(cuid()) @db.VarChar(64)
   question      String   @db.Text
-  options       Json     // Array of strings
+  options       Json
   correctAnswer String
   explanation   String?  @db.Text
   order         Int
-  quizId        String
+  quizId        String   @db.VarChar(64)
   createdAt     DateTime @default(now())
 
   // Relations
@@ -108,13 +108,13 @@ model QuizQuestion {
 }
 
 model QuizAttempt {
-  id          String   @id @default(cuid())
+  id          String   @id @default(cuid()) @db.VarChar(64)
   score       Int
-  answers     Json     // Array of user answers
-  timeSpent   Int      // in seconds
+  answers     Json
+  timeSpent   Int
   passed      Boolean
-  userId      String
-  quizId      String
+  userId      String   @db.VarChar(64)
+  quizId      String   @db.VarChar(64)
   attemptedAt DateTime @default(now())
 
   // Relations
@@ -125,9 +125,9 @@ model QuizAttempt {
 }
 
 model Enrollment {
-  id         String   @id @default(cuid())
-  userId     String
-  courseId   String
+  id         String   @id @default(cuid()) @db.VarChar(64)
+  userId     String   @db.VarChar(64)
+  courseId   String   @db.VarChar(64)
   enrolledAt DateTime @default(now())
 
   // Relations
@@ -139,11 +139,11 @@ model Enrollment {
 }
 
 model Progress {
-  id          String    @id @default(cuid())
-  userId      String
-  lessonId    String
+  id          String    @id @default(cuid()) @db.VarChar(64)
+  userId      String    @db.VarChar(64)
+  lessonId    String    @db.VarChar(64)
   completed   Boolean   @default(false)
-  timeSpent   Int       @default(0) // in seconds
+  timeSpent   Int       @default(0)
   completedAt DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -157,14 +157,14 @@ model Progress {
 }
 
 model Payment {
-  id            String        @id @default(cuid())
-  userId        String
-  courseId      String?
+  id            String        @id @default(cuid()) @db.VarChar(64)
+  userId        String        @db.VarChar(64)
+  courseId      String?       @db.VarChar(64)
   amount        Float
   currency      String        @default("EUR")
   status        PaymentStatus
   paymentMethod String
-  stripeId      String?
+  stripeId      String?       @db.VarChar(64)
   createdAt     DateTime      @default(now())
 
   // Relations
@@ -175,7 +175,7 @@ model Payment {
 }
 
 model Announcement {
-  id         String   @id @default(cuid())
+  id         String   @id @default(cuid()) @db.VarChar(64)
   title      String
   content    String   @db.Text
   image      String?
@@ -190,18 +190,18 @@ model Announcement {
 }
 
 model Product {
-  id          String   @id @default(cuid())
-  name        String
-  description String?  @db.Text
-  price       Float
-  discount    Float?   // Can be percentage (0-100) or fixed amount
-  discountType String? // 'percentage' or 'fixed'
-  images      Json     // Array of image URLs
-  category    String?
-  isActive    Boolean  @default(true)
-  stock       Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           String   @id @default(cuid()) @db.VarChar(64)
+  name         String
+  description  String?  @db.Text
+  price        Float
+  discount     Float?
+  discountType String?
+  images       Json
+  category     String?
+  isActive     Boolean  @default(true)
+  stock        Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   @@map("products")
 }
