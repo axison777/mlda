@@ -163,6 +163,31 @@ const announcementSchemas = {
   }).min(1)
 };
 
+const productSchemas = {
+  create: Joi.object({
+    name: Joi.string().min(3).max(200).required(),
+    description: Joi.string().max(2000),
+    price: patterns.price.required(),
+    discount: Joi.number().min(0),
+    discountType: Joi.string().valid('percentage', 'fixed'),
+    images: Joi.array().items(patterns.url).min(1).required(),
+    category: Joi.string().max(100),
+    stock: Joi.number().min(0).default(0)
+  }),
+
+  update: Joi.object({
+    name: Joi.string().min(3).max(200),
+    description: Joi.string().max(2000),
+    price: patterns.price,
+    discount: Joi.number().min(0),
+    discountType: Joi.string().valid('percentage', 'fixed'),
+    images: Joi.array().items(patterns.url).min(1),
+    category: Joi.string().max(100),
+    isActive: Joi.boolean(),
+    stock: Joi.number().min(0)
+  }).min(1)
+};
+
 module.exports = {
   validate,
   patterns,
@@ -171,5 +196,6 @@ module.exports = {
   lessonSchemas: extendedLessonSchemas,
   quizSchemas: extendedQuizSchemas,
   paymentSchemas,
-  announcementSchemas
+  announcementSchemas,
+  productSchemas
 };

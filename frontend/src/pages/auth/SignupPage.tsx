@@ -4,10 +4,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
 import { Eye, EyeOff, User, GraduationCap } from 'lucide-react';
+import { toast } from 'sonner';
 import type { UserRole } from '@/store/authStore';
 
 export const SignupPage = () => {
@@ -125,31 +125,46 @@ export const SignupPage = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Je souhaite m'inscrire en tant que
                 </label>
-                <RadioGroup
-                  value={formData.role}
-                  onValueChange={(value) => handleInputChange('role', value)}
-                >
-                  <div className="flex items-center space-x-2 p-3 border border-gray-200 rounded-lg">
-                    <RadioGroupItem value="student" id="student" />
-                    <Label htmlFor="student" className="flex items-center flex-1 cursor-pointer">
+                <div className="space-y-3">
+                  <div 
+                    className={`flex items-center space-x-3 p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                      formData.role === 'student' ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                    onClick={() => handleInputChange('role', 'student')}
+                  >
+                    <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                      formData.role === 'student' ? 'border-red-500 bg-red-500' : 'border-gray-300'
+                    }`}>
+                      {formData.role === 'student' && <div className="w-2 h-2 rounded-full bg-white" />}
+                    </div>
+                    <div className="flex items-center flex-1">
                       <GraduationCap className="w-5 h-5 mr-3 text-blue-600" />
                       <div>
                         <p className="font-medium">Étudiant</p>
                         <p className="text-sm text-gray-600">Apprendre l'allemand</p>
                       </div>
-                    </Label>
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-2 p-3 border border-gray-200 rounded-lg">
-                    <RadioGroupItem value="professor" id="professor" />
-                    <Label htmlFor="professor" className="flex items-center flex-1 cursor-pointer">
+                  <div 
+                    className={`flex items-center space-x-3 p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                      formData.role === 'professor' ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                    onClick={() => handleInputChange('role', 'professor')}
+                  >
+                    <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                      formData.role === 'professor' ? 'border-red-500 bg-red-500' : 'border-gray-300'
+                    }`}>
+                      {formData.role === 'professor' && <div className="w-2 h-2 rounded-full bg-white" />}
+                    </div>
+                    <div className="flex items-center flex-1">
                       <User className="w-5 h-5 mr-3 text-green-600" />
                       <div>
                         <p className="font-medium">Professeur</p>
                         <p className="text-sm text-gray-600">Enseigner l'allemand</p>
                       </div>
-                    </Label>
+                    </div>
                   </div>
-                </RadioGroup>
+                </div>
               </div>
 
               <div>
