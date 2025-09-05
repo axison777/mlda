@@ -23,7 +23,7 @@ interface AuthStore {
 
 export const useAuthStore = create<AuthStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       user: null,
       token: null,
       isAuthenticated: false,
@@ -32,7 +32,7 @@ export const useAuthStore = create<AuthStore>()(
           apiClient.setToken(token);
           localStorage.setItem('mlda-token', token);
         }
-        set({ user, token, isAuthenticated: true });
+        set({ user, token: token ?? get().token, isAuthenticated: true });
       },
       logout: () => {
         localStorage.removeItem('mlda-token');
@@ -40,9 +40,12 @@ export const useAuthStore = create<AuthStore>()(
       },
       initializeAuth: () => {
         const token = localStorage.getItem('mlda-token');
-        if (token && get().user) {
+        if (token) {
           apiClient.setToken(token);
-          set({ token });
+          // Keep existing user from persisted state if present
+          set({ token, isAuthenticated: !!get().user });
+        } else {
+          set({ isAuthenticated: false });
         }
       },
     }),

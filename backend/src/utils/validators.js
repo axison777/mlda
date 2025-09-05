@@ -17,6 +17,9 @@ const validate = (schema) => {
   };
 };
 
+// Prisma cuid pattern: starts with 'c' + 24 lowercase alphanumerics (total length 25)
+const cuidRegex = /^c[a-z0-9]{24}$/;
+
 // Common validation patterns
 const patterns = {
   email: Joi.string().email().required(),
@@ -34,7 +37,9 @@ const patterns = {
   price: Joi.number().min(0).max(999.99),
   duration: Joi.number().min(1).max(10080), // max 1 week in minutes
   url: Joi.string().uri(),
-  id: Joi.string().cuid()
+  id: Joi.string().pattern(cuidRegex).messages({
+    'string.pattern.base': 'Invalid id format. Expected a Prisma cuid (e.g., cxxxxxxxxxxxxxxxxxxxxxxx).'
+  })
 };
 
 // Extended validation schemas

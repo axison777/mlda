@@ -183,7 +183,7 @@ export const LandingPage = () => {
                 <CarouselPrevious className="left-2" />
                 <CarouselNext className="right-2" />
               </Carousel>
-            </div>
+              </motion.div>
           </div>
         </div>
       </section>
