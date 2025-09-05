@@ -220,6 +220,51 @@ class ApiClient {
       method: 'DELETE',
     });
   }
+
+  // Product endpoints
+  async getProducts(params?: {
+    page?: number;
+    limit?: number;
+    category?: string;
+    search?: string;
+    active?: boolean;
+  }) {
+    const searchParams = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined) {
+          searchParams.append(key, value.toString());
+        }
+      });
+    }
+    
+    const query = searchParams.toString();
+    return this.request<{ products: any[]; pagination: any }>(`/products${query ? `?${query}` : ''}`);
+  }
+
+  async getProductById(id: string) {
+    return this.request<{ product: any }>(`/products/${id}`);
+  }
+
+  async createProduct(productData: any) {
+    return this.request<{ product: any }>('/products', {
+      method: 'POST',
+      body: JSON.stringify(productData),
+    });
+  }
+
+  async updateProduct(id: string, updates: any) {
+    return this.request<{ product: any }>(`/products/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(updates),
+    });
+  }
+
+  async deleteProduct(id: string) {
+    return this.request(`/products/${id}`, {
+      method: 'DELETE',
+    });
+  }
 }
 
 export const apiClient = new ApiClient(API_BASE_URL);

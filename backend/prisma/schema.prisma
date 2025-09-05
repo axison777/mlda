@@ -189,6 +189,23 @@ model Announcement {
   @@map("announcements")
 }
 
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  description String?  @db.Text
+  price       Float
+  discount    Float?   // Can be percentage (0-100) or fixed amount
+  discountType String? // 'percentage' or 'fixed'
+  images      Json     // Array of image URLs
+  category    String?
+  isActive    Boolean  @default(true)
+  stock       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("products")
+}
+
 enum Role {
   ADMIN
   TEACHER
