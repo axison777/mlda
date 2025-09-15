@@ -14,7 +14,8 @@ import {
   X, 
   Crown,
   Zap,
-  Star
+  Star,
+  Plus
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -188,7 +189,12 @@ export const Subscriptions = () => {
               </Badge>
               <div className="space-x-2">
                 <Button variant="outline" size="sm">Modifier</Button>
-                <Button variant="outline" size="sm" className="text-red-600">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="text-red-600"
+                  onClick={handleCancelSubscription}
+                >
                   Annuler
                 </Button>
               </div>
@@ -268,6 +274,7 @@ export const Subscriptions = () => {
                             ? 'bg-red-600 hover:bg-red-700' 
                             : 'bg-gray-900 hover:bg-gray-800'
                         }`}
+                        onClick={() => handleUpgrade(plan.name)}
                       >
                         {plan.price > currentSubscription.price ? 'Mettre à niveau' : 'Rétrograder'}
                       </Button>
@@ -309,7 +316,11 @@ export const Subscriptions = () => {
                     {invoice.status === 'paid' ? 'Payé' : 'Échoué'}
                   </Badge>
                 </div>
-                <Button variant="outline" size="sm">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => handleDownloadInvoice(invoice.id)}
+                >
                   Télécharger
                 </Button>
               </div>
@@ -335,19 +346,90 @@ export const Subscriptions = () => {
               </div>
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" size="sm">Modifier</Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={handleModifySubscription}
+              >
+                Modifier
+              </Button>
               <Button variant="outline" size="sm" className="text-red-600">
                 Supprimer
               </Button>
             </div>
           </div>
           
-          <Button variant="outline" className="w-full mt-4">
+          <Button 
+            variant="outline" 
+            className="w-full mt-4"
+            onClick={handleAddPaymentMethod}
+          >
             <Plus className="w-4 h-4 mr-2" />
             Ajouter une méthode de paiement
           </Button>
         </CardContent>
       </Card>
+
+      {/* Payment Dialog */}
+      <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Paiement - Plan {selectedPlan}</DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="cardNumber">Numéro de carte</Label>
+              <Input
+                id="cardNumber"
+                value={paymentData.cardNumber}
+                onChange={(e) => setPaymentData(prev => ({ ...prev, cardNumber: e.target.value }))}
+                placeholder="1234 5678 9012 3456"
+              />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="expiryDate">Date d'expiration</Label>
+                <Input
+                  id="expiryDate"
+                  value={paymentData.expiryDate}
+                  onChange={(e) => setPaymentData(prev => ({ ...prev, expiryDate: e.target.value }))}
+                  placeholder="MM/AA"
+                />
+              </div>
+              <div>
+                <Label htmlFor="cvv">CVV</Label>
+                <Input
+                  id="cvv"
+                  value={paymentData.cvv}
+                  onChange={(e) => setPaymentData(prev => ({ ...prev, cvv: e.target.value }))}
+                  placeholder="123"
+                />
+              </div>
+            </div>
+            
+            <div>
+              <Label htmlFor="name">Nom sur la carte</Label>
+              <Input
+                id="name"
+                value={paymentData.name}
+                onChange={(e) => setPaymentData(prev => ({ ...prev, name: e.target.value }))}
+                placeholder="Nom complet"
+              />
+            </div>
+            
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setShowPaymentDialog(false)}>
+                Annuler
+              </Button>
+              <Button onClick={handlePayment} className="bg-red-600 hover:bg-red-700">
+                Confirmer le paiement
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 };

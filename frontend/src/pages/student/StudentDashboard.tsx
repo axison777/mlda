@@ -1,9 +1,13 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { BookOpen, Clock, Award, Play } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { BookOpen, Clock, Award, Play, HelpCircle, GraduationCap } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { toast } from 'sonner';
 
 const studentStats = [
   {
@@ -36,6 +40,7 @@ const currentCourses = [
     progress: 75,
     nextLesson: 'Leçon 8: Les verbes irréguliers',
     instructor: 'Dr. Mueller',
+    hasQuiz: true,
   },
   {
     id: '2',
@@ -43,26 +48,102 @@ const currentCourses = [
     progress: 45,
     nextLesson: 'Leçon 5: Le subjonctif',
     instructor: 'Prof. Schmidt',
+    hasQuiz: true,
   },
   {
     id: '3',
     title: 'Conversation allemande',
     progress: 90,
-    nextLesson: 'Leçon 12: Débats et opinions',
+    nextLesson: 'Quiz final du cours',
     instructor: 'Mme Weber',
+    hasQuiz: false,
+    isFinalQuiz: true,
+  },
+];
+
+const levelTestQuestions = [
+  {
+    question: 'Comment dit-on "Bonjour" en allemand ?',
+    options: ['Guten Tag', 'Auf Wiedersehen', 'Danke', 'Bitte'],
+    correct: 0,
+  },
+  {
+    question: 'Quel est l\'article défini pour "Buch" (livre) ?',
+    options: ['der', 'die', 'das', 'den'],
+    correct: 2,
+  },
+  {
+    question: 'Comment conjugue-t-on "haben" (avoir) à la troisième personne du singulier ?',
+    options: ['habe', 'hast', 'hat', 'haben'],
+    correct: 2,
   },
 ];
 
 export const StudentDashboard = () => {
+  const [showLevelTest, setShowLevelTest] = useState(false);
+  const [testAnswers, setTestAnswers] = useState<number[]>([]);
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [testCompleted, setTestCompleted] = useState(false);
+
+  const handleStartLevelTest = () => {
+    setShowLevelTest(true);
+    setTestAnswers([]);
+    setCurrentQuestion(0);
+    setTestCompleted(false);
+  };
+
+  const handleTestAnswer = (answerIndex: number) => {
+    const newAnswers = [...testAnswers];
+    newAnswers[currentQuestion] = answerIndex;
+    setTestAnswers(newAnswers);
+
+    if (currentQuestion < levelTestQuestions.length - 1) {
+      setCurrentQuestion(prev => prev + 1);
+    } else {
+      // Test terminé
+      const score = levelTestQuestions.reduce((correct, question, index) => {
+        return correct + (newAnswers[index] === question.correct ? 1 : 0);
+      }, 0);
+      
+      const percentage = Math.round((score / levelTestQuestions.length) * 100);
+      let level = 'A1';
+      
+      if (percentage >= 90) level = 'C1';
+      else if (percentage >= 80) level = 'B2';
+      else if (percentage >= 70) level = 'B1';
+      else if (percentage >= 60) level = 'A2';
+      
+      setTestCompleted(true);
+      toast.success(`Test terminé ! Votre niveau estimé: ${level} (${percentage}%)`);
+    }
+  };
+
+  const handleContinueCourse = (course: any) => {
+    if (course.isFinalQuiz) {
+      toast.info(`Démarrage du quiz final pour: ${course.title}`);
+    } else {
+      toast.success(`Redirection vers: ${course.nextLesson}`);
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="space-y-6"
     >
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard Étudiant</h1>
-        <p className="text-gray-600">Continuez votre apprentissage de l'allemand</p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Dashboard Étudiant</h1>
+          <p className="text-gray-600">Continuez votre apprentissage de l'allemand</p>
+        </div>
+        <Button 
+          onClick={handleStartLevelTest}
+          className="bg-purple-600 hover:bg-purple-700"
+        >
+          <GraduationCap className="w-4 h-4 mr-2" />
+          Test de Niveau
+        </Button>
       </div>
 
       {/* Stats Cards */}
@@ -116,14 +197,30 @@ export const StudentDashboard = () => {
                     </div>
                     <Progress value={course.progress} className="h-2" />
                   </div>
+                  {course.hasQuiz && (
+                    <Badge className="bg-purple-100 text-purple-800 mt-2">
+                      <HelpCircle className="w-3 h-3 mr-1" />
+                      Quiz disponible
+                    </Badge>
+                  )}
                 </div>
                 <div className="ml-6">
-                  <Link to="/student/continue">
-                    <Button className="bg-red-600 hover:bg-red-700">
-                      <Play className="w-4 h-4 mr-2" />
-                      Continuer
-                    </Button>
-                  </Link>
+                  <Button 
+                    className={course.isFinalQuiz ? "bg-purple-600 hover:bg-purple-700" : "bg-red-600 hover:bg-red-700"}
+                    onClick={() => handleContinueCourse(course)}
+                  >
+                    {course.isFinalQuiz ? (
+                      <>
+                        <HelpCircle className="w-4 h-4 mr-2" />
+                        Quiz Final
+                      </>
+                    ) : (
+                      <>
+                        <Play className="w-4 h-4 mr-2" />
+                        Continuer
+                      </>
+                    )}
+                  </Button>
                 </div>
               </motion.div>
             ))}
@@ -172,6 +269,63 @@ export const StudentDashboard = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Level Test Dialog */}
+      <Dialog open={showLevelTest} onOpenChange={setShowLevelTest}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center">
+              <GraduationCap className="w-5 h-5 mr-2 text-purple-600" />
+              Test de Niveau Allemand
+            </DialogTitle>
+          </DialogHeader>
+          
+          {!testCompleted ? (
+            <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-600">
+                  Question {currentQuestion + 1} sur {levelTestQuestions.length}
+                </span>
+                <Progress value={((currentQuestion + 1) / levelTestQuestions.length) * 100} className="w-32 h-2" />
+              </div>
+              
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium">
+                  {levelTestQuestions[currentQuestion].question}
+                </h3>
+                <div className="space-y-2">
+                  {levelTestQuestions[currentQuestion].options.map((option, optionIndex) => (
+                    <Button
+                      key={optionIndex}
+                      variant="outline"
+                      className="w-full justify-start text-left h-auto p-4"
+                      onClick={() => handleTestAnswer(optionIndex)}
+                    >
+                      {option}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center space-y-4">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
+                <Award className="w-8 h-8 text-green-600" />
+              </div>
+              <h3 className="text-xl font-semibold">Test terminé !</h3>
+              <p className="text-gray-600">
+                Consultez vos résultats et les cours recommandés pour votre niveau.
+              </p>
+              <Button 
+                onClick={() => setShowLevelTest(false)}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                Voir les recommandations
+              </Button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 };
