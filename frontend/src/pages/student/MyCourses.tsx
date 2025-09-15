@@ -99,6 +99,20 @@ export const MyCourses = () => {
   const enrolledCourses = enrollmentsData?.enrollments || [];
   const availableCourses = coursesData?.courses || [];
 
+  const filteredEnrolledCourses = enrolledCourses.filter(course => {
+    const matchesSearch = course.title?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                         course.instructor?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesLevel = filterLevel === 'all' || course.level === filterLevel;
+    return matchesSearch && matchesLevel;
+  });
+
+  const filteredAvailableCourses = availableCourses.filter(course => {
+    const matchesSearch = course.title?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                         course.instructor?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesLevel = filterLevel === 'all' || course.level === filterLevel;
+    return matchesSearch && matchesLevel;
+  });
+
   if (enrollmentsLoading || coursesLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -260,7 +274,7 @@ export const MyCourses = () => {
       {/* Available Courses */}
       {activeTab === 'available' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {availableCourses.map((course, index) => (
+          {filteredAvailableCourses.map((course, index) => (
             <motion.div
               key={course.id}
               initial={{ opacity: 0, y: 20 }}
