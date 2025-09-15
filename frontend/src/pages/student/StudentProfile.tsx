@@ -170,7 +170,7 @@ export const StudentProfile = () => {
               </div>
 
               <Button className="bg-red-600 hover:bg-red-700">
-                <Save className="w-4 h-4 mr-2" />
+                <Save className="w-4 h-4 mr-2" onClick={handleSaveProfile} />
                 Sauvegarder les modifications
               </Button>
             </CardContent>
@@ -218,16 +218,27 @@ export const StudentProfile = () => {
                   {profileData.interests.map((interest, index) => (
                     <Badge key={index} variant="secondary">
                       {interest}
-                      <X className="w-3 h-3 ml-1 cursor-pointer" />
+                      <X 
+                        className="w-3 h-3 ml-1 cursor-pointer" 
+                        onClick={() => removeInterest(index)}
+                      />
                     </Badge>
                   ))}
                 </div>
-                <Button variant="outline" size="sm" className="mt-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="mt-2"
+                  onClick={addInterest}
+                >
                   Ajouter un centre d'intérêt
                 </Button>
               </div>
 
-              <Button className="bg-red-600 hover:bg-red-700">
+              <Button 
+                className="bg-red-600 hover:bg-red-700"
+                onClick={handleSaveGoals}
+              >
                 <Save className="w-4 h-4 mr-2" />
                 Sauvegarder les objectifs
               </Button>

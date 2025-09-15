@@ -1,8 +1,12 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { 
   CreditCard, 
   Calendar, 
@@ -12,6 +16,7 @@ import {
   Zap,
   Star
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 const currentSubscription = {
   plan: 'Professionnel',
@@ -103,7 +108,45 @@ const billingHistory = [
 ];
 
 export const Subscriptions = () => {
+  const navigate = useNavigate();
   const [selectedPlan, setSelectedPlan] = useState('Professionnel');
+  const [showPaymentDialog, setShowPaymentDialog] = useState(false);
+  const [paymentData, setPaymentData] = useState({
+    cardNumber: '',
+    expiryDate: '',
+    cvv: '',
+    name: '',
+  });
+
+  const handleUpgrade = (planName: string) => {
+    setSelectedPlan(planName);
+    setShowPaymentDialog(true);
+  };
+
+  const handlePayment = () => {
+    // Simulation du paiement
+    toast.success(`Abonnement ${selectedPlan} activé avec succès !`);
+    setShowPaymentDialog(false);
+    setPaymentData({ cardNumber: '', expiryDate: '', cvv: '', name: '' });
+  };
+
+  const handleCancelSubscription = () => {
+    if (confirm('Êtes-vous sûr de vouloir annuler votre abonnement ?')) {
+      toast.success('Abonnement annulé. Il restera actif jusqu\'à la fin de la période.');
+    }
+  };
+
+  const handleModifySubscription = () => {
+    toast.info('Redirection vers la modification d\'abonnement...');
+  };
+
+  const handleDownloadInvoice = (invoiceId: string) => {
+    toast.success(`Téléchargement de la facture ${invoiceId}...`);
+  };
+
+  const handleAddPaymentMethod = () => {
+    toast.info('Ajout d\'une nouvelle méthode de paiement...');
+  };
 
   const getStatusBadge = (status: string) => {
     return status === 'paid' 

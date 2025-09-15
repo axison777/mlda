@@ -42,10 +42,10 @@ export const ProfessorProfile = () => {
 
   const handleChangePassword = () => {
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      alert('Les mots de passe ne correspondent pas');
+      toast.error('Les mots de passe ne correspondent pas');
       return;
     }
-    console.log('Mot de passe changé');
+    toast.success('Mot de passe modifié avec succès !');
     setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
   };
 
@@ -220,7 +220,6 @@ export const ProfessorProfile = () => {
                   ))}
                 </div>
                 <Button variant="outline" size="sm" className="mt-2">
-                  <Plus className="w-4 h-4 mr-2" />
                   Ajouter une spécialité
                 </Button>
               </div>
@@ -235,7 +234,6 @@ export const ProfessorProfile = () => {
                   ))}
                 </div>
                 <Button variant="outline" size="sm" className="mt-2">
-                  <Plus className="w-4 h-4 mr-2" />
                   Ajouter une langue
                 </Button>
               </div>

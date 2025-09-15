@@ -228,8 +228,22 @@ export const MyCourses = () => {
                         <Button variant="outline" size="sm">
                           <Eye className="w-4 h-4" />
                         </Button>
+                          onClick={() => toast.info(`Aperçu du cours: ${course.title}`)}
+                          onClick={() => toast.info(`Modification du cours: ${course.title}`)}
                         <Button variant="outline" size="sm">
                           <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="text-red-600"
+                          onClick={() => {
+                            if (confirm('Êtes-vous sûr de vouloir supprimer ce cours ?')) {
+                              toast.success('Cours supprimé avec succès !');
+                            }
+                          }}
+                        >
+                          <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
                     </div>

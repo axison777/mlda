@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Search, Play, BookOpen, Clock, Star, Filter } from 'lucide-react';
 import { useCourses, useUserEnrollments } from '@/hooks/useCourses';
+import { toast } from 'sonner';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -237,7 +238,13 @@ export const MyCourses = () => {
                       <p className="text-sm text-gray-600 mb-3">
                         Prochaine leçon: {course.nextLesson}
                       </p>
-                      <Button className="w-full bg-red-600 hover:bg-red-700">
+                      <Button 
+                        className="w-full bg-red-600 hover:bg-red-700"
+                        onClick={() => {
+                          toast.success(`Redirection vers: ${course.nextLesson}`);
+                          // Ici vous pouvez ajouter la navigation vers la leçon
+                        }}
+                      >
                         <Play className="w-4 h-4 mr-2" />
                         Continuer le cours
                       </Button>
@@ -292,7 +299,10 @@ export const MyCourses = () => {
 
                   <div className="flex items-center justify-between">
                     <span className="text-2xl font-bold text-red-600">€{course.price}</span>
-                    <Button className="bg-red-600 hover:bg-red-700">
+                    <Button 
+                      className="bg-red-600 hover:bg-red-700"
+                      onClick={() => toast.success(`Inscription au cours: ${course.title}`)}
+                    >
                       S'inscrire
                     </Button>
                   </div>

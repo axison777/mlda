@@ -163,17 +163,89 @@ export const ContinueCourse = () => {
               )}
 
               <div className="flex gap-4 mt-6">
-                <Button onClick={handleMarkComplete} className="bg-green-600 hover:bg-green-700">
+                <Button 
+                  onClick={handleMarkComplete} 
+                  className="bg-green-600 hover:bg-green-700"
+                  disabled={lessonCompleted}
+                >
                   <CheckCircle className="w-4 h-4 mr-2" />
-                  Marquer comme terminé
+                  {lessonCompleted ? 'Leçon terminée' : 'Marquer comme terminé'}
                 </Button>
-                <Button onClick={handleNextLesson} className="bg-red-600 hover:bg-red-700">
+                <Button 
+                  onClick={handleNextLesson} 
+                  className="bg-red-600 hover:bg-red-700"
+                  disabled={!lessonCompleted}
+                >
                   Leçon suivante
                   <SkipForward className="w-4 h-4 ml-2" />
                 </Button>
               </div>
             </CardContent>
           </Card>
+
+          {/* Quiz Dialog */}
+          <Dialog open={showQuiz} onOpenChange={setShowQuiz}>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle className="flex items-center">
+                  <HelpCircle className="w-5 h-5 mr-2 text-purple-600" />
+                  {lessonQuiz.title}
+                </DialogTitle>
+              </DialogHeader>
+              
+              <div className="space-y-6">
+                {lessonQuiz.questions.map((question, questionIndex) => (
+                  <div key={questionIndex} className="space-y-3">
+                    <h3 className="font-medium">
+                      Question {questionIndex + 1}: {question.question}
+                    </h3>
+                    <div className="space-y-2">
+                      {question.options.map((option, optionIndex) => (
+                        <div 
+                          key={optionIndex}
+                          className={`p-3 border rounded-lg cursor-pointer transition-all ${
+                            quizAnswers[questionIndex] === optionIndex 
+                              ? 'border-red-500 bg-red-50' 
+                              : 'border-gray-200 hover:border-gray-300'
+                          }`}
+                          onClick={() => handleQuizAnswer(questionIndex, optionIndex)}
+                        >
+                          <div className="flex items-center">
+                            <div className={`w-4 h-4 rounded-full border-2 mr-3 ${
+                              quizAnswers[questionIndex] === optionIndex 
+                                ? 'border-red-500 bg-red-500' 
+                                : 'border-gray-300'
+                            }`}>
+                              {quizAnswers[questionIndex] === optionIndex && (
+                                <div className="w-2 h-2 rounded-full bg-white mx-auto mt-0.5" />
+                              )}
+                            </div>
+                            {option}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+                
+                <div className="flex gap-2">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowQuiz(false)}
+                  >
+                    Fermer
+                  </Button>
+                  <Button 
+                    onClick={handleSubmitQuiz}
+                    className="bg-purple-600 hover:bg-purple-700"
+                    disabled={quizAnswers.length !== lessonQuiz.questions.length}
+                  >
+                    Valider le quiz
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
 
         {/* Sidebar */}
