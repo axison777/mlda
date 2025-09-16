@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Save, Upload, Star, Users, BookOpen, Award } from 'lucide-react';
+import { toast } from 'sonner';
 
 export const ProfessorProfile = () => {
   const [profileData, setProfileData] = useState({
@@ -37,15 +38,15 @@ export const ProfessorProfile = () => {
   };
 
   const handleSaveProfile = () => {
-    console.log('Profil sauvegardé:', profileData);
+    toast.success('Profil sauvegardé avec succès !');
   };
 
   const handleChangePassword = () => {
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      alert('Les mots de passe ne correspondent pas');
+      toast.error('Les mots de passe ne correspondent pas');
       return;
     }
-    console.log('Mot de passe changé');
+    toast.success('Mot de passe modifié avec succès !');
     setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
   };
 
@@ -220,7 +221,6 @@ export const ProfessorProfile = () => {
                   ))}
                 </div>
                 <Button variant="outline" size="sm" className="mt-2">
-                  <Plus className="w-4 h-4 mr-2" />
                   Ajouter une spécialité
                 </Button>
               </div>
@@ -235,7 +235,6 @@ export const ProfessorProfile = () => {
                   ))}
                 </div>
                 <Button variant="outline" size="sm" className="mt-2">
-                  <Plus className="w-4 h-4 mr-2" />
                   Ajouter une langue
                 </Button>
               </div>
