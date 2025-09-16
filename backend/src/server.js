@@ -17,7 +17,6 @@ const enrollmentRoutes = require('./routes/enrollment.routes');
 const uploadRoutes = require('./routes/upload.routes');
 const statsRoutes = require('./routes/stats.routes');
 const webhookRoutes = require('./routes/webhook.routes');
-const productRoutes = require('./routes/product.routes');
 
 const { generalLimiter, authLimiter } = require('./middleware/rateLimiter');
 const requestLogger = require('./middleware/requestLogger');
@@ -64,7 +63,6 @@ app.use('/api/announcements', announcementRoutes);
 app.use('/api/enrollments', enrollmentRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/stats', statsRoutes);
-app.use('/api/products', productRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

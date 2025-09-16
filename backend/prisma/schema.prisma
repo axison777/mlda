@@ -3,13 +3,13 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id        String   @id @default(cuid()) @db.VarChar(64)
-  email     String   @unique @db.VarChar(191)
+  id        String   @id @default(cuid())
+  email     String   @unique
   password  String
   firstName String
   lastName  String
@@ -20,28 +20,28 @@ model User {
   updatedAt DateTime @updatedAt
 
   // Relations
-  courses      Course[]
-  enrollments  Enrollment[]
-  progress     Progress[]
+  courses     Course[]
+  enrollments Enrollment[]
+  progress    Progress[]
   quizAttempts QuizAttempt[]
-  payments     Payment[]
+  payments    Payment[]
 
   @@map("users")
 }
 
 model Course {
-  id          String       @id @default(cuid()) @db.VarChar(64)
+  id          String      @id @default(cuid())
   title       String
-  description String       @db.Text
-  price       Float        @default(0)
+  description String
+  price       Float       @default(0)
   level       Level
-  duration    Int
+  duration    Int         // in minutes
   thumbnail   String?
   status      CourseStatus @default(DRAFT)
-  featured    Boolean      @default(false)
-  teacherId   String       @db.VarChar(64)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  featured    Boolean     @default(false)
+  teacherId   String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 
   // Relations
   teacher     User         @relation(fields: [teacherId], references: [id], onDelete: Cascade)
@@ -53,15 +53,15 @@ model Course {
 }
 
 model Lesson {
-  id          String   @id @default(cuid()) @db.VarChar(64)
+  id          String   @id @default(cuid())
   title       String
   description String?
-  content     String   @db.Text
+  content     String
   videoUrl    String?
-  duration    Int
+  duration    Int      // in minutes
   order       Int
   isPublished Boolean  @default(false)
-  courseId    String   @db.VarChar(64)
+  courseId    String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -74,12 +74,12 @@ model Lesson {
 }
 
 model Quiz {
-  id           String   @id @default(cuid()) @db.VarChar(64)
+  id           String   @id @default(cuid())
   title        String
   description  String?
-  timeLimit    Int?
+  timeLimit    Int?     // in minutes
   passingScore Int      @default(70)
-  lessonId     String   @db.VarChar(64)
+  lessonId     String
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -92,13 +92,13 @@ model Quiz {
 }
 
 model QuizQuestion {
-  id            String   @id @default(cuid()) @db.VarChar(64)
-  question      String   @db.Text
-  options       Json
+  id            String   @id @default(cuid())
+  question      String
+  options       Json     // Array of strings
   correctAnswer String
-  explanation   String?  @db.Text
+  explanation   String?
   order         Int
-  quizId        String   @db.VarChar(64)
+  quizId        String
   createdAt     DateTime @default(now())
 
   // Relations
@@ -108,13 +108,13 @@ model QuizQuestion {
 }
 
 model QuizAttempt {
-  id          String   @id @default(cuid()) @db.VarChar(64)
+  id          String   @id @default(cuid())
   score       Int
-  answers     Json
-  timeSpent   Int
+  answers     Json     // Array of user answers
+  timeSpent   Int      // in seconds
   passed      Boolean
-  userId      String   @db.VarChar(64)
-  quizId      String   @db.VarChar(64)
+  userId      String
+  quizId      String
   attemptedAt DateTime @default(now())
 
   // Relations
@@ -125,9 +125,9 @@ model QuizAttempt {
 }
 
 model Enrollment {
-  id         String   @id @default(cuid()) @db.VarChar(64)
-  userId     String   @db.VarChar(64)
-  courseId   String   @db.VarChar(64)
+  id         String   @id @default(cuid())
+  userId     String
+  courseId   String
   enrolledAt DateTime @default(now())
 
   // Relations
@@ -139,11 +139,11 @@ model Enrollment {
 }
 
 model Progress {
-  id          String    @id @default(cuid()) @db.VarChar(64)
-  userId      String    @db.VarChar(64)
-  lessonId    String    @db.VarChar(64)
+  id          String    @id @default(cuid())
+  userId      String
+  lessonId    String
   completed   Boolean   @default(false)
-  timeSpent   Int       @default(0)
+  timeSpent   Int       @default(0) // in seconds
   completedAt DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -157,14 +157,14 @@ model Progress {
 }
 
 model Payment {
-  id            String        @id @default(cuid()) @db.VarChar(64)
-  userId        String        @db.VarChar(64)
-  courseId      String?       @db.VarChar(64)
+  id            String        @id @default(cuid())
+  userId        String
+  courseId      String?
   amount        Float
   currency      String        @default("EUR")
   status        PaymentStatus
   paymentMethod String
-  stripeId      String?       @db.VarChar(64)
+  stripeId      String?
   createdAt     DateTime      @default(now())
 
   // Relations
@@ -175,9 +175,9 @@ model Payment {
 }
 
 model Announcement {
-  id         String   @id @default(cuid()) @db.VarChar(64)
+  id         String   @id @default(cuid())
   title      String
-  content    String   @db.Text
+  content    String
   image      String?
   targetRole Role?
   isActive   Boolean  @default(true)
@@ -187,23 +187,6 @@ model Announcement {
   updatedAt  DateTime @updatedAt
 
   @@map("announcements")
-}
-
-model Product {
-  id           String   @id @default(cuid()) @db.VarChar(64)
-  name         String
-  description  String?  @db.Text
-  price        Float
-  discount     Float?
-  discountType String?
-  images       Json
-  category     String?
-  isActive     Boolean  @default(true)
-  stock        Int      @default(0)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  @@map("products")
 }
 
 enum Role {

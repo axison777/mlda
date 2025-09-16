@@ -233,12 +233,8 @@ export const MyStudents = () => {
                           <MessageCircle className="w-4 h-4 mr-2" />
                           Envoyer un message
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => toast.info(`Ouverture du profil de ${student.name}`)}>
-                          Voir le profil
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => toast.info(`Consultation des résultats de ${student.name}`)}>
-                          Voir les résultats
-                        </DropdownMenuItem>
+                        <DropdownMenuItem>Voir le profil</DropdownMenuItem>
+                        <DropdownMenuItem>Voir les résultats</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>

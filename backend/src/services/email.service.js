@@ -2,9 +2,9 @@ const nodemailer = require('nodemailer');
 
 class EmailService {
   constructor() {
-    this.transporter = nodemailer.createTransport({
+    this.transporter = nodemailer.createTransporter({
       host: process.env.EMAIL_HOST,
-      port: Number(process.env.EMAIL_PORT) || 587,
+      port: process.env.EMAIL_PORT || 587,
       secure: false,
       auth: {
         user: process.env.EMAIL_USER,

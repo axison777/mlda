@@ -114,17 +114,44 @@ export const CreateCourse = () => {
           <Card>
             <CardHeader>
               <CardTitle>Informations du Cours</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div>
+                <Label htmlFor="title">Titre du cours</Label>
+                <Input
+                  id="title"
+                  value={courseData.title}
+                  onChange={(e) => handleInputChange('title', e.target.value)}
+                  placeholder="Ex: Allemand pour débutants"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  id="description"
+                  value={courseData.description}
+                  onChange={(e) => handleInputChange('description', e.target.value)}
+                  placeholder="Décrivez votre cours en détail..."
+                  rows={4}
+                />
+              </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <Label htmlFor="duration">Durée estimée</Label>
-                  <Input
-                    id="duration"
-                    value={courseData.duration}
-                    onChange={(e) => handleInputChange('duration', e.target.value)}
-                    placeholder="Ex: 8 semaines"
-                  />
+                  <Label htmlFor="level">Niveau</Label>
+                  <Select value={courseData.level} onValueChange={(value) => handleInputChange('level', value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionnez un niveau" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="beginner">Débutant (A1-A2)</SelectItem>
+                      <SelectItem value="intermediate">Intermédiaire (B1-B2)</SelectItem>
+                      <SelectItem value="advanced">Avancé (C1-C2)</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
+
                 <div>
                   <Label htmlFor="category">Catégorie</Label>
                   <Select value={courseData.category} onValueChange={(value) => handleInputChange('category', value)}>
@@ -139,6 +166,29 @@ export const CreateCourse = () => {
                       <SelectItem value="exam">Préparation aux Examens</SelectItem>
                     </SelectContent>
                   </Select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <Label htmlFor="price">Prix (€)</Label>
+                  <Input
+                    id="price"
+                    type="number"
+                    value={courseData.price}
+                    onChange={(e) => handleInputChange('price', e.target.value)}
+                    placeholder="49"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="duration">Durée estimée</Label>
+                  <Input
+                    id="duration"
+                    value={courseData.duration}
+                    onChange={(e) => handleInputChange('duration', e.target.value)}
+                    placeholder="Ex: 8 semaines"
+                  />
                 </div>
               </div>
 

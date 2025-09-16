@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from '@/components/ui/sonner';
 import { useEffect } from 'react';
 import { useAuthStore } from '@/store/authStore';
@@ -11,7 +10,6 @@ import { ProtectedRoute } from '@/components/ProtectedRoute';
 // Public Pages
 import { LandingPage } from '@/pages/public/LandingPage';
 import { ContactPage } from '@/pages/public/ContactPage';
-import { ShopPage } from '@/pages/public/ShopPage';
 import { LoginPage } from '@/pages/auth/LoginPage';
 import { SignupPage } from '@/pages/auth/SignupPage';
 
@@ -19,7 +17,6 @@ import { SignupPage } from '@/pages/auth/SignupPage';
 import { AdminDashboard } from '@/pages/admin/AdminDashboard';
 import { UsersManagement } from '@/pages/admin/UsersManagement';
 import { CoursesManagement } from '@/pages/admin/CoursesManagement';
-import { ProductsManagement } from '@/pages/admin/ProductsManagement';
 import { PaymentsManagement } from '@/pages/admin/PaymentsManagement';
 import { AdsManagement } from '@/pages/admin/AdsManagement';
 import { AdminSettings } from '@/pages/admin/AdminSettings';
@@ -35,8 +32,6 @@ import { ContinueCourse } from '@/pages/student/ContinueCourse';
 import { Subscriptions } from '@/pages/student/Subscriptions';
 import { StudentProfile } from '@/pages/student/StudentProfile';
 
-const queryClient = new QueryClient();
-
 function App() {
   const { initializeAuth } = useAuthStore();
 
@@ -45,13 +40,11 @@ function App() {
   }, [initializeAuth]);
 
   return (
-    <QueryClientProvider client={queryClient}>
       <Router>
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/contact" element={<ContactPage />} />
-          <Route path="/shop" element={<ShopPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
 
@@ -67,7 +60,6 @@ function App() {
             <Route index element={<AdminDashboard />} />
             <Route path="users" element={<UsersManagement />} />
             <Route path="courses" element={<CoursesManagement />} />
-            <Route path="products" element={<ProductsManagement />} />
             <Route path="payments" element={<PaymentsManagement />} />
             <Route path="ads" element={<AdsManagement />} />
             <Route path="settings" element={<AdminSettings />} />
@@ -106,7 +98,6 @@ function App() {
         </Routes>
         <Toaster />
       </Router>
-    </QueryClientProvider>
   );
 }
 

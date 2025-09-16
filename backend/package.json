@@ -14,7 +14,7 @@
     "db:seed": "node prisma/seed.js"
   },
   "dependencies": {
-    "@prisma/client": "^5.22.0",
+    "@prisma/client": "^5.7.1",
     "bcryptjs": "^2.4.3",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
@@ -25,22 +25,16 @@
     "joi": "^17.11.0",
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",
-    "mysql2": "^3.14.4",
     "nodemailer": "^6.9.7",
     "stripe": "^14.9.0"
   },
   "devDependencies": {
     "jest": "^29.7.0",
     "nodemon": "^3.0.2",
-    "prisma": "^5.22.0",
+    "prisma": "^5.7.1",
     "supertest": "^6.3.3"
   },
-  "keywords": [
-    "e-learning",
-    "german",
-    "education",
-    "api"
-  ],
+  "keywords": ["e-learning", "german", "education", "api"],
   "author": "MLDA Team",
   "license": "MIT"
 }
