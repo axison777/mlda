@@ -166,7 +166,8 @@ const getTeacherStats = async (req, res) => {
         },
         orderBy: { enrolledAt: 'desc' }
       })
-    ]);
+    ];
+    )
 
     const stats = {
       courses: {
@@ -259,7 +260,8 @@ const getStudentStats = async (req, res) => {
         _sum: { timeSpent: true },
         where: { userId }
       })
-    ]);
+    ];
+    )
 
     const stats = {
       enrollments: {

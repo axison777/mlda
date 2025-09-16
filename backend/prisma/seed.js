@@ -166,50 +166,6 @@ async function main() {
     }
   });
 
-  // Create sample products
-  await prisma.product.create({
-    data: {
-      name: 'Manuel d\'allemand A1 - Débutant',
-      description: 'Manuel complet pour apprendre les bases de l\'allemand avec exercices et audio.',
-      price: 29.99,
-      discount: 20,
-      discountType: 'percentage',
-      images: [
-        'https://images.pexels.com/photos/159711/books-bookstore-book-reading-159711.jpeg',
-        'https://images.pexels.com/photos/256455/pexels-photo-256455.jpeg'
-      ],
-      category: 'Livres',
-      stock: 50
-    }
-  });
-
-  await prisma.product.create({
-    data: {
-      name: 'Dictionnaire Allemand-Français',
-      description: 'Dictionnaire complet avec plus de 50,000 mots et expressions.',
-      price: 45.00,
-      images: [
-        'https://images.pexels.com/photos/416405/pexels-photo-416405.jpeg'
-      ],
-      category: 'Livres',
-      stock: 25
-    }
-  });
-
-  await prisma.product.create({
-    data: {
-      name: 'Cartes de vocabulaire allemand',
-      description: 'Set de 500 cartes pour mémoriser le vocabulaire essentiel.',
-      price: 19.99,
-      discount: 5,
-      discountType: 'fixed',
-      images: [
-        'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg'
-      ],
-      category: 'Matériel',
-      stock: 100
-    }
-  });
   console.log('✅ Database seeded successfully!');
   console.log('👤 Admin: admin@mlda.de / admin123');
   console.log('👨‍🏫 Teacher: hans.mueller@mlda.de / teacher123');

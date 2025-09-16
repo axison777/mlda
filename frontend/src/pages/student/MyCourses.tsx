@@ -7,7 +7,6 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Search, Play, BookOpen, Clock, Star, Filter } from 'lucide-react';
 import { useCourses, useUserEnrollments } from '@/hooks/useCourses';
-import { toast } from 'sonner';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -98,20 +97,6 @@ export const MyCourses = () => {
 
   const enrolledCourses = enrollmentsData?.enrollments || [];
   const availableCourses = coursesData?.courses || [];
-
-  const filteredEnrolledCourses = enrolledCourses.filter(course => {
-    const matchesSearch = course.title?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                         course.instructor?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesLevel = filterLevel === 'all' || course.level === filterLevel;
-    return matchesSearch && matchesLevel;
-  });
-
-  const filteredAvailableCourses = availableCourses.filter(course => {
-    const matchesSearch = course.title?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                         course.instructor?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesLevel = filterLevel === 'all' || course.level === filterLevel;
-    return matchesSearch && matchesLevel;
-  });
 
   if (enrollmentsLoading || coursesLoading) {
     return (
@@ -252,13 +237,7 @@ export const MyCourses = () => {
                       <p className="text-sm text-gray-600 mb-3">
                         Prochaine leçon: {course.nextLesson}
                       </p>
-                      <Button 
-                        className="w-full bg-red-600 hover:bg-red-700"
-                        onClick={() => {
-                          toast.success(`Redirection vers: ${course.nextLesson}`);
-                          // Ici vous pouvez ajouter la navigation vers la leçon
-                        }}
-                      >
+                      <Button className="w-full bg-red-600 hover:bg-red-700">
                         <Play className="w-4 h-4 mr-2" />
                         Continuer le cours
                       </Button>
@@ -274,7 +253,7 @@ export const MyCourses = () => {
       {/* Available Courses */}
       {activeTab === 'available' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredAvailableCourses.map((course, index) => (
+          {availableCourses.map((course, index) => (
             <motion.div
               key={course.id}
               initial={{ opacity: 0, y: 20 }}
@@ -313,10 +292,7 @@ export const MyCourses = () => {
 
                   <div className="flex items-center justify-between">
                     <span className="text-2xl font-bold text-red-600">€{course.price}</span>
-                    <Button 
-                      className="bg-red-600 hover:bg-red-700"
-                      onClick={() => toast.success(`Inscription au cours: ${course.title}`)}
-                    >
+                    <Button className="bg-red-600 hover:bg-red-700">
                       S'inscrire
                     </Button>
                   </div>

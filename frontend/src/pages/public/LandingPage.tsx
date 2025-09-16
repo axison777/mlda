@@ -102,7 +102,6 @@ export const LandingPage = () => {
             </div>
             <nav className="hidden md:flex space-x-8">
               <a href="#features" className="text-gray-600 hover:text-gray-900">Fonctionnalités</a>
-              <Link to="/shop" className="text-gray-600 hover:text-gray-900">Boutique</Link>
               <a href="#pricing" className="text-gray-600 hover:text-gray-900">Tarifs</a>
               <a href="#testimonials" className="text-gray-600 hover:text-gray-900">Témoignages</a>
               <Link to="/contact" className="text-gray-600 hover:text-gray-900">Contact</Link>
@@ -183,7 +182,7 @@ export const LandingPage = () => {
                 <CarouselPrevious className="left-2" />
                 <CarouselNext className="right-2" />
               </Carousel>
-              </motion.div>
+            </div>
           </div>
         </div>
       </section>
